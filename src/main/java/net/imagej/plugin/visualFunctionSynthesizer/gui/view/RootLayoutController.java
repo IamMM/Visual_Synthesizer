@@ -21,20 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.imagej.plugin.minimalJavaFXPlugin.gui.view;
+package net.imagej.plugin.visualFunctionSynthesizer.gui.view;
+
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TextField;
+import net.imagej.plugin.visualFunctionSynthesizer.VisualSynthesizer;
+import org.scijava.Context;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.input.KeyEvent;
-import org.scijava.Context;
-import org.scijava.log.LogService;
-import org.scijava.plugin.Parameter;
 
 /**
  * FXML Controller class
@@ -43,32 +40,36 @@ import org.scijava.plugin.Parameter;
  */
 public class RootLayoutController implements Initializable {
 
-    @Parameter
-    private LogService log;
-    
-    @FXML
-    private Label testLabel;
+    VisualSynthesizer functionGeneratorMain = new VisualSynthesizer();
 
     @FXML
-    private TextField testField;
+    private TextField titleTextField, widthTextField, heightTextField, slicesTextField;
 
     @FXML
-    private Button testButton;
-    
-    @FXML
-    private void handleButtonAction(ActionEvent event) {
-        log.info("The button is clicked");
-    }
-    
-    @FXML
-    private void handleFieldAction(KeyEvent event) {
-        log.info("The field has been modified");
-        log.info(testField.getText());
-    }
+    private ChoiceBox<String> typeChoiceBox;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        String[] typeChoices = new String[]{"8-Bit", "16-Bit", "32-Bit", "RGB"};
+        typeChoiceBox.getItems().addAll(typeChoices);
+        typeChoiceBox.setValue("8-Bit");
     }
+
+    @FXML
+    private void handleButtonAction() {
+        // parse values from gui
+        String title = titleTextField.getCharacters().toString();
+        String type = typeChoiceBox.getValue();
+        int width = Integer.parseInt(widthTextField.getCharacters().toString());
+        int height = Integer.parseInt(heightTextField.getCharacters().toString());
+        int slices = Integer.parseInt(slicesTextField.getCharacters().toString());
+
+        // apply
+        functionGeneratorMain.functionOne(title, type, width, height, slices);
+    }
+
+
+
 
     public void setContext(Context context) {
         context.inject(this);

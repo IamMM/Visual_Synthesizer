@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.imagej.plugin.minimalJavaFXPlugin.gui;
+package net.imagej.plugin.visualFunctionSynthesizer.gui;
 
 import java.io.IOException;
 import javafx.application.Application;
@@ -58,7 +58,7 @@ public class MainApp extends Application {
             // Load root layout from fxml file.
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("/fiji/plugin/filamentdetector/gui/view/RootLayout.fxml"));
-            rootLayout = (TilePane) loader.load();
+            rootLayout = loader.load();
 
             // Show the scene containing the root layout.
             Scene scene = new Scene(rootLayout);

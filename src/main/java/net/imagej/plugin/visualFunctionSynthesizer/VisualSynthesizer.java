@@ -21,18 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.imagej.plugin.minimalJavaFXPlugin;
+package net.imagej.plugin.visualFunctionSynthesizer;
 
+import ij.*;
+import ij.process.ImageProcessor;
 import net.imagej.ImageJ;
-import net.imagej.plugin.minimalJavaFXPlugin.gui.MainAppFrame;
+import net.imagej.plugin.visualFunctionSynthesizer.gui.MainAppFrame;
 
 import org.scijava.command.Command;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
-@Plugin(type = Command.class, menuPath = "Plugins>Example>Minimal JavaFX Plugin")
-public class MinimalJavaFXPlugin implements Command {
+@Plugin(type = Command.class, menuPath = "Plugins>VisualFunctionSynthesizer")
+public class VisualSynthesizer implements Command {
 
     @Parameter
     private ImageJ ij;
@@ -40,12 +42,12 @@ public class MinimalJavaFXPlugin implements Command {
     @Parameter
     private LogService log;
 
-    public static final String PLUGIN_NAME = "Minimal JavaFX Plugin";
+    public static final String PLUGIN_NAME = "VisualFunctionSynthesizer";
     public static final String VERSION = version();
 
     private static String version() {
         String version = null;
-        final Package pack = MinimalJavaFXPlugin.class.getPackage();
+        final Package pack = VisualSynthesizer.class.getPackage();
         if (pack != null) {
             version = pack.getImplementationVersion();
         }
@@ -54,9 +56,6 @@ public class MinimalJavaFXPlugin implements Command {
 
     @Override
     public void run() {
-
-        log.info("Running " + PLUGIN_NAME + " version " + VERSION);
-               
         // Launch JavaFX interface
         MainAppFrame app = new MainAppFrame(ij);
         app.setTitle(PLUGIN_NAME + " version " + VERSION);
@@ -69,6 +68,38 @@ public class MinimalJavaFXPlugin implements Command {
         final ImageJ ij = net.imagej.Main.launch(args);
 
         // Launch the command.
-        ij.command().run(MinimalJavaFXPlugin.class, true);
+        ij.command().run(VisualSynthesizer.class, true);
+    }
+
+    public void functionOne(String title, String type, int width, int height, int slices) {
+
+
+        // Tyoe: "32-bit White"
+        ImagePlus imagePlus = IJ.createImage(title, "32-bit Black", width, height, slices);
+
+        int w = imagePlus.getWidth();
+        int h = imagePlus.getHeight();
+
+
+        ImageProcessor processor = imagePlus.getProcessor();
+
+        for(int y_=0; y_<h; y_++) {
+
+                double y = (double) y_/h;
+                double dy = 10*(y - 0.5);
+
+                for(int x_=0;x_<w; x_++) {
+
+                    double x = (double) x_/w;
+                    double dx = 10*(x - 0.5);
+
+                    double dist = Math.sin(dx)*Math.sin(dx) + Math.sin(dy)*Math.sin(dy);
+
+                    processor.putPixelValue(x_,y_, dist);
+                }
+
+        }
+
+        imagePlus.show();
     }
 }
