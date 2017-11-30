@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.imagej.plugin.visualFunctionSynthesizer;
+package net.imagej.plugin.fis;
 
 import ij.*;
 import ij.process.ImageProcessor;
@@ -30,7 +30,7 @@ import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import net.imagej.ImageJ;
-import net.imagej.plugin.visualFunctionSynthesizer.gui.MainAppFrame;
+import net.imagej.plugin.fis.gui.MainAppFrame;
 
 import org.scijava.command.Command;
 import org.scijava.log.LogService;

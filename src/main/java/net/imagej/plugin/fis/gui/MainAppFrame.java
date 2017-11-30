@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.imagej.plugin.visualFunctionSynthesizer.gui;
+package net.imagej.plugin.fis.gui;
 
 import java.io.IOException;
 import javafx.application.Platform;
@@ -31,7 +31,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javax.swing.JFrame;
 import net.imagej.ImageJ;
-import net.imagej.plugin.visualFunctionSynthesizer.gui.view.RootLayoutController;
+import net.imagej.plugin.fis.gui.view.RootLayoutController;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 
@@ -76,7 +76,7 @@ public class MainAppFrame extends JFrame {
         // Init the root layout
         try {
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainApp.class.getResource("/net/imagej/plugin/visualFunctionSynthesizer/gui/view/RootLayout.fxml"));
+            loader.setLocation(MainApp.class.getResource("/net/imagej/plugin/fis/gui/view/RootLayout.fxml"));
             Pane rootLayout = loader.load();
 
             // Get the controller and add an ImageJ context to it.

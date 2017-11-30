@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.imagej.plugin.visualFunctionSynthesizer.gui.view;
+package net.imagej.plugin.fis.gui.view;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -30,7 +30,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import net.imagej.plugin.visualFunctionSynthesizer.FunctionImageSynthesizer;
+import net.imagej.plugin.fis.FunctionImageSynthesizer;
 import org.scijava.Context;
 
 import java.io.FileInputStream;
