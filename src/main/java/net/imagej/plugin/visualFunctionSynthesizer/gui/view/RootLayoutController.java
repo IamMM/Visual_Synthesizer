@@ -25,11 +25,16 @@ package net.imagej.plugin.visualFunctionSynthesizer.gui.view;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
-import net.imagej.plugin.visualFunctionSynthesizer.VisualSynthesizer;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import net.imagej.plugin.visualFunctionSynthesizer.FunctionImageSynthesizer;
 import org.scijava.Context;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -38,9 +43,9 @@ import java.util.ResourceBundle;
  *
  * @author Hadrien Mary
  */
-public class RootLayoutController implements Initializable {
+public class RootLayoutController implements Initializable{
 
-    VisualSynthesizer functionGeneratorMain = new VisualSynthesizer();
+    FunctionImageSynthesizer FIS = new FunctionImageSynthesizer();
 
     @FXML
     private TextField titleTextField, widthTextField, heightTextField, slicesTextField;
@@ -48,28 +53,81 @@ public class RootLayoutController implements Initializable {
     @FXML
     private ChoiceBox<String> typeChoiceBox;
 
+    @FXML
+    private ChoiceBox<String> fillChoiceBox;
+
+    @FXML
+    private ImageView preview;
+
+    @FXML
+    private CheckBox previewCheckBox;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        // init type choice box
         String[] typeChoices = new String[]{"8-Bit", "16-Bit", "32-Bit", "RGB"};
         typeChoiceBox.getItems().addAll(typeChoices);
         typeChoiceBox.setValue("8-Bit");
+
+        // init fill choice box
+        String[] fillChoices = new String[]{"Black", "White"};
+        fillChoiceBox.getItems().addAll(fillChoices);
+        fillChoiceBox.setValue("Black");
+
+        showDefaultPreview();
+
+        widthTextField.focusedProperty().addListener((observable, oldValue, newValue) -> updatePreview());
+        heightTextField.focusedProperty().addListener((observable, oldValue, newValue) -> updatePreview());
+
+        previewCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if(previewCheckBox.isSelected()) {
+                updatePreview();
+            } else {
+                showDefaultPreview();
+            }
+        });
+
+    }
+
+    private void showDefaultPreview() {
+
+        Image default_preview;// = new Image("/Users/Max/Documents/workspace/Visual_Synthesizer/preview.png");
+        try {
+            default_preview = new Image(new FileInputStream("preview.png"));
+        preview.setImage(default_preview);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void updatePreview() {
+
+        if(!previewCheckBox.isSelected()){
+            return;
+        }
+
+        // parse values from gui
+        String type = typeChoiceBox.getValue();
+        int width = Integer.parseInt(widthTextField.getCharacters().toString());
+        int height = Integer.parseInt(heightTextField.getCharacters().toString());
+
+        preview.setImage(FIS.getPreview(type, width, height));
     }
 
     @FXML
     private void handleButtonAction() {
         // parse values from gui
         String title = titleTextField.getCharacters().toString();
-        String type = typeChoiceBox.getValue();
+        String type = typeChoiceBox.getValue() + " " + fillChoiceBox.getValue();
+
         int width = Integer.parseInt(widthTextField.getCharacters().toString());
         int height = Integer.parseInt(heightTextField.getCharacters().toString());
         int slices = Integer.parseInt(slicesTextField.getCharacters().toString());
 
         // apply
-        functionGeneratorMain.functionOne(title, type, width, height, slices);
+        FIS.functionOne(title, type, width, height, slices);
     }
-
-
-
 
     public void setContext(Context context) {
         context.inject(this);

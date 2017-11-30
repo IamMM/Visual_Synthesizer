@@ -11,7 +11,7 @@
         <version>15.4.0</version>
     </parent>
 
-    <artifactId>minimal-javafx-plugin</artifactId>
+    <artifactId>Function_Image_Synthesizer</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
     <name>JavaFX plugin for ImageJ</name>

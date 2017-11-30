@@ -86,7 +86,7 @@ public class MainAppFrame extends JFrame {
             // Show the scene containing the root layout.
             Scene scene = new Scene(rootLayout);
             this.fxPanel.setScene(scene);
-            this.fxPanel.show();
+            this.fxPanel.setVisible(true);
 
             // Resize the JFrame to the JavaFX scene
             this.setSize((int) scene.getWidth(), (int) scene.getHeight());
