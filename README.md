@@ -1,12 +1,12 @@
-# imagej-plugin-javafx
+# Function Image Synthesizer
+This is a plugin solution for ImageJ/Fiji to generate images or stacks out mathematical functions. The UI makes it possible to play around various parameters and will let you preview the result.
 
-`imagej-plugin-javafx` is a minimal ImageJ2 plugin that use JavaFX. It is an example plugin to show how to use JavaFX and ImageJ.
-
-More details can be found on the wiki : http://imagej.net/Build_ImageJ2_Plugin_With_JavaFX
+## Development
+This Project started off the minimal ImageJ2 plugin from [Hadrien Mary](mailto:hadrien.mary@gmail.com). 
 
 ## Authors
 
-- [Hadrien Mary](mailto:hadrien.mary@gmail.com).
+- [Maximilian Maske](mailto:m.maske@posteo.de).
 
 ## License
 
