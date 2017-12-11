@@ -46,22 +46,28 @@ import java.util.ResourceBundle;
  */
 public class RootLayoutController implements Initializable{
 
-    FunctionImageSynthesizer FIS = new FunctionImageSynthesizer();
+    private FunctionImageSynthesizer FIS = new FunctionImageSynthesizer();
 
     @FXML
-    private TextField titleTextField, widthTextField, heightTextField, slicesTextField, maxTextField, minTextField;
+    private TextField titleTextField, widthTextField, heightTextField, slicesTextField;
 
     @FXML
-    private ChoiceBox<String> typeChoiceBox, fillChoiceBox, pointOfOriginChoiceBox;
+    private TextField minX, minY, minZ;
+
+    @FXML
+    private TextField maxX, maxY, maxZ;
+
+    @FXML
+    private ChoiceBox<String> typeChoiceBox, fillChoiceBox;
 
     @FXML
     private ImageView preview;
 
     @FXML
-    private CheckBox previewCheckBox;
+    private CheckBox previewCheckBox, equalCheckBox;
 
     @FXML
-    private TextArea formularTextArea;
+    private TextArea functionTextArea;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -73,10 +79,6 @@ public class RootLayoutController implements Initializable{
         String[] fillChoices = new String[]{"Black", "White"};
         fillChoiceBox.getItems().addAll(fillChoices);
         fillChoiceBox.setValue("Black");
-
-        String[] pointsChoices = new String[]{"Top-Left", "Center", "Bottom-Left"};
-        pointOfOriginChoiceBox.getItems().addAll(pointsChoices);
-        pointOfOriginChoiceBox.setValue("Center");
 
         widthTextField.focusedProperty().addListener((observable, oldValue, newValue) -> updatePreview());
         heightTextField.focusedProperty().addListener((observable, oldValue, newValue) -> updatePreview());
@@ -110,36 +112,99 @@ public class RootLayoutController implements Initializable{
             return;
         }
 
-        // parse values from gui
+        // GUI
+        // meta
         String type = typeChoiceBox.getValue();
+
+        // size
         int width = Integer.parseInt(widthTextField.getCharacters().toString().replaceAll("[^\\d.]", ""));
         int height = Integer.parseInt(heightTextField.getCharacters().toString().replaceAll("[^\\d.]", ""));
-        double min = Double.parseDouble(minTextField.getText().replaceAll("[^-\\d.]", ""));
-        double max = Double.parseDouble(maxTextField.getText().replaceAll("[^\\d.]", ""));
-        String pointOfOrigin = pointOfOriginChoiceBox.getValue();
 
-        String fomular = formularTextArea.getText();
+        // coordinate range
+        double[] min = new double[2];
+        double[] max = new double[2];
 
-        preview.setImage(FIS.getPreview(type, width, height, min, max, pointOfOrigin, fomular));
+        if(equalCheckBox.isSelected()) {
+            String minFromGUI = minX.getText().replaceAll("[^-\\d.]", "");
+            double x_min = minFromGUI.equals("")?0:Double.parseDouble(minFromGUI);
+            String maxFromGUI = maxX.getText().replaceAll("[^\\d.]", "");
+            double x_max = maxFromGUI.equals("")?width>height?width-1:height-1:Double.parseDouble(maxFromGUI);
+            min[0] = min[1] = x_min;
+            max[0] = max[1] = x_max;
+        } else {
+            String x_minFromGUI = minX.getText().replaceAll("[^-\\d.]", "");
+            double x_min = x_minFromGUI.equals("")?0:Double.parseDouble(x_minFromGUI);
+            String x_maxFromGUI = maxX.getText().replaceAll("[^\\d.]", "");
+            double x_max = x_maxFromGUI.equals("")?width>height?width-1:height-1:Double.parseDouble(x_maxFromGUI);
+            min[0] = x_min;
+            max[0] = x_max;
+
+            String y_minFromGUI = minY.getText().replaceAll("[^-\\d.]", "");
+            double y_min = y_minFromGUI.equals("")?0:Double.parseDouble(y_minFromGUI);
+            String y_maxFromGUI = maxY.getText().replaceAll("[^\\d.]", "");
+            double y_max = y_maxFromGUI.equals("")?width>height?width-1:height-1:Double.parseDouble(y_maxFromGUI);
+            min[1] = y_min;
+            max[1] = y_max;
+        }
+
+        // function
+        String function = functionTextArea.getText();
+
+        preview.setImage(FIS.getPreview(type, width, height, min, max, function));
     }
 
     @FXML
     private void handleButtonAction() {
-        // parse values from gui
+
+        // GUI
+        // meta
         String title = titleTextField.getCharacters().toString();
         String type = typeChoiceBox.getValue() + " " + fillChoiceBox.getValue();
 
+        // size
         int width = Integer.parseInt(widthTextField.getCharacters().toString().replaceAll("[^\\d.]", ""));
         int height = Integer.parseInt(heightTextField.getCharacters().toString().replaceAll("[^\\d.]", ""));
         int slices = Integer.parseInt(slicesTextField.getCharacters().toString().replaceAll("[^\\d.]", ""));
 
-        double min = Double.parseDouble(minTextField.getText().replaceAll("[^-\\d.]", ""));
-        double max = Double.parseDouble(maxTextField.getText().replaceAll("[^\\d.]", ""));
+        // coordinate range
+        double[] min = new double[3];
+        double[] max = new double[3];
 
-        String fomular = formularTextArea.getText();
+        if(equalCheckBox.isSelected()) {
+            String minFromGUI = minX.getText().replaceAll("[^-\\d.]", "");
+            double x_min = minFromGUI.equals("")?0:Double.parseDouble(minFromGUI);
+            String maxFromGUI = maxX.getText().replaceAll("[^\\d.]", "");
+            double x_max = maxFromGUI.equals("")?width>height?width-1:height-1:Double.parseDouble(maxFromGUI);
+            min[0] = min[1] = min[2] = x_min;
+            max[0] = max[1] = max[2] = x_max;
+        } else {
+            String x_minFromGUI = minX.getText().replaceAll("[^-\\d.]", "");
+            double x_min = x_minFromGUI.equals("")?0:Double.parseDouble(x_minFromGUI);
+            String x_maxFromGUI = maxX.getText().replaceAll("[^\\d.]", "");
+            double x_max = x_maxFromGUI.equals("")?width>height?width-1:height-1:Double.parseDouble(x_maxFromGUI);
+            min[0] = x_min;
+            max[0] = x_max;
+
+            String y_minFromGUI = minY.getText().replaceAll("[^-\\d.]", "");
+            double y_min = y_minFromGUI.equals("")?0:Double.parseDouble(y_minFromGUI);
+            String y_maxFromGUI = maxY.getText().replaceAll("[^\\d.]", "");
+            double y_max = y_maxFromGUI.equals("")?width>height?width-1:height-1:Double.parseDouble(y_maxFromGUI);
+            min[1] = y_min;
+            max[1] = y_max;
+
+            String z_minFromGUI = minZ.getText().replaceAll("[^-\\d.]", "");
+            double z_min = z_minFromGUI.equals("")?0:Double.parseDouble(z_minFromGUI);
+            String z_maxFromGUI = maxZ.getText().replaceAll("[^\\d.]", "");
+            double z_max = z_maxFromGUI.equals("")?width>height?width-1:height-1:Double.parseDouble(z_maxFromGUI);
+            min[2] = z_min;
+            max[2] = z_max;
+        }
+
+        // function
+        String function = functionTextArea.getText();
 
         // apply
-        FIS.functionOne(title, type, width, height, slices, min, max, fomular);
+        FIS.functionToImage(title, type, width, height, slices, min, max, function);
     }
 
     public void setContext(Context context) {
