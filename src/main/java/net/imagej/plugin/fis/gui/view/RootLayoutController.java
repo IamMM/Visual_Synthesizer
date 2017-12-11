@@ -27,6 +27,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -48,13 +49,10 @@ public class RootLayoutController implements Initializable{
     FunctionImageSynthesizer FIS = new FunctionImageSynthesizer();
 
     @FXML
-    private TextField titleTextField, widthTextField, heightTextField, slicesTextField;
+    private TextField titleTextField, widthTextField, heightTextField, slicesTextField, maxTextField, minTextField;
 
     @FXML
-    private ChoiceBox<String> typeChoiceBox;
-
-    @FXML
-    private ChoiceBox<String> fillChoiceBox;
+    private ChoiceBox<String> typeChoiceBox, fillChoiceBox, pointOfOriginChoiceBox;
 
     @FXML
     private ImageView preview;
@@ -62,19 +60,23 @@ public class RootLayoutController implements Initializable{
     @FXML
     private CheckBox previewCheckBox;
 
+    @FXML
+    private TextArea formularTextArea;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // init type choice box
+        // init gui components
         String[] typeChoices = new String[]{"8-Bit", "16-Bit", "32-Bit", "RGB"};
         typeChoiceBox.getItems().addAll(typeChoices);
         typeChoiceBox.setValue("8-Bit");
 
-        // init fill choice box
         String[] fillChoices = new String[]{"Black", "White"};
         fillChoiceBox.getItems().addAll(fillChoices);
         fillChoiceBox.setValue("Black");
 
-        showDefaultPreview();
+        String[] pointsChoices = new String[]{"Top-Left", "Center", "Bottom-Left"};
+        pointOfOriginChoiceBox.getItems().addAll(pointsChoices);
+        pointOfOriginChoiceBox.setValue("Center");
 
         widthTextField.focusedProperty().addListener((observable, oldValue, newValue) -> updatePreview());
         heightTextField.focusedProperty().addListener((observable, oldValue, newValue) -> updatePreview());
@@ -87,6 +89,7 @@ public class RootLayoutController implements Initializable{
             }
         });
 
+        showDefaultPreview();
     }
 
     private void showDefaultPreview() {
@@ -109,10 +112,15 @@ public class RootLayoutController implements Initializable{
 
         // parse values from gui
         String type = typeChoiceBox.getValue();
-        int width = Integer.parseInt(widthTextField.getCharacters().toString());
-        int height = Integer.parseInt(heightTextField.getCharacters().toString());
+        int width = Integer.parseInt(widthTextField.getCharacters().toString().replaceAll("[^\\d.]", ""));
+        int height = Integer.parseInt(heightTextField.getCharacters().toString().replaceAll("[^\\d.]", ""));
+        double min = Double.parseDouble(minTextField.getText().replaceAll("[^-\\d.]", ""));
+        double max = Double.parseDouble(maxTextField.getText().replaceAll("[^\\d.]", ""));
+        String pointOfOrigin = pointOfOriginChoiceBox.getValue();
 
-        preview.setImage(FIS.getPreview(type, width, height));
+        String fomular = formularTextArea.getText();
+
+        preview.setImage(FIS.getPreview(type, width, height, min, max, pointOfOrigin, fomular));
     }
 
     @FXML
@@ -121,12 +129,17 @@ public class RootLayoutController implements Initializable{
         String title = titleTextField.getCharacters().toString();
         String type = typeChoiceBox.getValue() + " " + fillChoiceBox.getValue();
 
-        int width = Integer.parseInt(widthTextField.getCharacters().toString());
-        int height = Integer.parseInt(heightTextField.getCharacters().toString());
-        int slices = Integer.parseInt(slicesTextField.getCharacters().toString());
+        int width = Integer.parseInt(widthTextField.getCharacters().toString().replaceAll("[^\\d.]", ""));
+        int height = Integer.parseInt(heightTextField.getCharacters().toString().replaceAll("[^\\d.]", ""));
+        int slices = Integer.parseInt(slicesTextField.getCharacters().toString().replaceAll("[^\\d.]", ""));
+
+        double min = Double.parseDouble(minTextField.getText().replaceAll("[^-\\d.]", ""));
+        double max = Double.parseDouble(maxTextField.getText().replaceAll("[^\\d.]", ""));
+
+        String fomular = formularTextArea.getText();
 
         // apply
-        FIS.functionOne(title, type, width, height, slices);
+        FIS.functionOne(title, type, width, height, slices, min, max, fomular);
     }
 
     public void setContext(Context context) {

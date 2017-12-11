@@ -44,13 +44,13 @@ public class FunctionImageSynthesizer implements Command {
     private static final int MAX_PREVIEW_SIZE = 128 ;
 
     @Parameter
-    private ImageJ ij;
+    private static ImageJ ij;
 
     @Parameter
     private LogService log;
 
-    public static final String PLUGIN_NAME = "Function Image Synthesizer";
-    public static final String VERSION = version();
+    private static final String PLUGIN_NAME = "Function Image Synthesizer";
+    private static final String VERSION = version();
 
     private static String version() {
         String version = null;
@@ -67,44 +67,57 @@ public class FunctionImageSynthesizer implements Command {
         MainAppFrame app = new MainAppFrame(ij);
         app.setTitle(PLUGIN_NAME + " " + VERSION);
         app.init();
-        
     }
 
     public static void main(final String... args) throws Exception {
         // Launch ImageJ as usual.
-        final ImageJ ij = net.imagej.Main.launch(args);
+        ij = net.imagej.Main.launch(args);
 
         // Launch the command.
         ij.command().run(FunctionImageSynthesizer.class, true);
     }
 
-    public void functionOne(String title, String type, int width, int height, int slices) {
+    public void functionOne(String title, String type, int width, int height, int slices, double min, double max, String function) {
 
         ImagePlus imagePlus = IJ.createImage(title, type, width, height, slices);
 
         ImageProcessor processor = imagePlus.getProcessor();
 
-        for(int y_=0; y_<height; y_++) {
+        double range = Math.abs(min - max);
 
-                double y = (double) y_/height;
-                double dy = 10*(y - 0.5);
+        String currFunc;
 
-                for(int x_=0;x_<width; x_++) {
+        for(int z_=0; z_<slices; z_++) {
+            processor.setSliceNumber(z_);
+            double z = (double) z_ / slices; // 0..1
+            double dz = range * z + min; // min..max
 
-                    double x = (double) x_/width;
-                    double dx = 10*(x - 0.5);
+            for(int y_=0; y_<height; y_++) {
 
-                    double dist = Math.sin(dx)*Math.sin(dx) + Math.sin(dy)*Math.sin(dy);
+                double y = (double) y_ / height; // 0..1
+                double dy = range * y + min; // min..max
 
-                    processor.putPixelValue(x_,y_, dist);
+                for (int x_ = 0; x_ < width; x_++) {
+
+                    double x = (double) x_ / width; // 0..1
+                    double dx = range * x + min; //min..max
+
+                    currFunc = function.replace("x", "" +   dx).replace("y", "" + dy);
+
+                    String val = IJ.runMacro("return '' + " + currFunc + ";");
+                    double val_ = Double.parseDouble(val);
+
+//                    double dist = Math.sin(dx) * Math.sin(dx) + Math.sin(dy) * Math.sin(dy);
+
+                    processor.putPixelValue(x_, y_, val_);
                 }
-
+            }
         }
 
         imagePlus.show();
     }
 
-    public Image getPreview(String type, int width, int height) {
+    public Image getPreview(String type, int width, int height, double min, double max, String function) {
 
         if(width>MAX_PREVIEW_SIZE) {
             height = height*MAX_PREVIEW_SIZE/width;
@@ -118,21 +131,33 @@ public class FunctionImageSynthesizer implements Command {
 
         int[] preview = new int[width*height];
 
+        double range = Math.abs(min - max);
+
+        String currFunc;
+
         for(int y_=0; y_<height; y_++) {
 
-            double y = (double) y_/height;
-            double dy = 10*(y - 0.5);
+            double y = (double) y_/height; // 0..1
+            double dy = range*y+min; // min..max
 
             for(int x_=0;x_<width; x_++) {
                 int pos = y_ * width + x_;
 
-                double x = (double) x_/width;
-                double dx = 10*(x - 0.5);
+                double x = (double) x_/width; // 0..1
+                double dx = range * x+min; //min..max
 
-                double dist = Math.sin(dx)*Math.sin(dx) + Math.sin(dy)*Math.sin(dy);
-                int value = (int) (dist/2*255);
+                currFunc = function.replace("x", "" +   dx).replace("y", "" + dy);
+
+                String val = IJ.runMacro("return '' + " + currFunc + ";");
+                double val_ = Double.parseDouble(val);
+
+                //double dist = Math.sin(dx)*Math.sin(dx) + Math.sin(dy)*Math.sin(dy);
+                // normalize
+                int value = (int) (val_/2*255);
 
                 preview[pos] = 0xFF000000 | (value<<16) | (value<<8) | value ;
+
+                if(dx == 0 || dy == 0) preview[pos] = 0xFFFF0000;
             }
 
         }
