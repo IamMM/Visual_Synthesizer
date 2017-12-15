@@ -23,12 +23,11 @@
  */
 package net.imagej.plugin.fis.gui.view;
 
+import ij.IJ;
+import ij.ImagePlus;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import net.imagej.plugin.fis.FunctionImageSynthesizer;
@@ -47,6 +46,7 @@ import java.util.ResourceBundle;
 public class RootLayoutController implements Initializable{
 
     private FunctionImageSynthesizer FIS = new FunctionImageSynthesizer();
+    private Image default_preview;
 
     @FXML
     private TextField titleTextField, widthTextField, heightTextField, slicesTextField;
@@ -61,29 +61,117 @@ public class RootLayoutController implements Initializable{
     private ChoiceBox<String> typeChoiceBox, fillChoiceBox;
 
     @FXML
+    private ToggleButton xEqualY, yEqualZ;
+
+    @FXML
     private ImageView preview;
 
     @FXML
-    private CheckBox previewCheckBox, equalCheckBox;
+    private CheckBox previewCheckBox;
 
     @FXML
     private TextArea functionTextArea;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // init gui components
+
+        initDefaultPreview();
+
+        // fill choice boxes
         String[] typeChoices = new String[]{"8-Bit", "16-Bit", "32-Bit", "RGB"};
         typeChoiceBox.getItems().addAll(typeChoices);
-        typeChoiceBox.setValue("8-Bit");
+        typeChoiceBox.setValue("32-Bit");
 
-        String[] fillChoices = new String[]{"Black", "White"};
+        String[] fillChoices = new String[]{"Black", "White", "Random", "Ramp"};
         fillChoiceBox.getItems().addAll(fillChoices);
         fillChoiceBox.setValue("Black");
 
-        widthTextField.focusedProperty().addListener((observable, oldValue, newValue) -> updatePreview());
-        heightTextField.focusedProperty().addListener((observable, oldValue, newValue) -> updatePreview());
+        // init change listener
+        widthTextField.textProperty().addListener((observable -> previewCheckBox.setSelected(false)));
+        heightTextField.textProperty().addListener((observable -> previewCheckBox.setSelected(false)));
+        slicesTextField.textProperty().addListener(observable -> previewCheckBox.setSelected(false));
 
-        previewCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+        xEqualY.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue) {
+                xEqualY.textProperty().setValue("=");
+                minY.textProperty().setValue(minX.textProperty().getValue());
+                maxY.textProperty().setValue(maxX.textProperty().getValue());
+                previewCheckBox.setSelected(false);
+            } else {
+                xEqualY.textProperty().setValue("≠");
+            }
+        });
+
+        yEqualZ.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue) {
+                yEqualZ.textProperty().setValue("=");
+                minZ.textProperty().setValue(minY.textProperty().getValue());
+                maxZ.textProperty().setValue(maxY.textProperty().getValue());
+                previewCheckBox.setSelected(false);
+            } else {
+                yEqualZ.textProperty().setValue("≠");
+            }
+        });
+
+        minX.textProperty().addListener((observable, oldValue, newValue) -> {
+            previewCheckBox.setSelected(false);
+            if(xEqualY.isSelected()) {
+                minY.textProperty().setValue(newValue);
+            }
+        });
+
+        maxX.textProperty().addListener((observable, oldValue, newValue) -> {
+            previewCheckBox.setSelected(false);
+            if(xEqualY.isSelected()) {
+                maxY.textProperty().setValue(newValue);
+            }
+        });
+
+        minY.textProperty().addListener((observable, oldValue, newValue) -> {
+            previewCheckBox.setSelected(false);
+            if(xEqualY.isSelected()) {
+                minX.textProperty().setValue(newValue);
+            }
+
+            if(yEqualZ.isSelected()) {
+                minZ.textProperty().setValue(newValue);
+            }
+        });
+
+        maxY.textProperty().addListener((observable, oldValue, newValue) -> {
+            previewCheckBox.setSelected(false);
+            if(xEqualY.isSelected()) {
+                maxY.textProperty().setValue(newValue);
+            }
+
+            if(yEqualZ.isSelected()) {
+                maxZ.textProperty().setValue(newValue);
+            }
+        });
+
+        minZ.textProperty().addListener((observable, oldValue, newValue) -> {
+            previewCheckBox.setSelected(false);
+            if(yEqualZ.isSelected()) {
+                minY.textProperty().setValue(newValue);
+            }
+        });
+
+        maxZ.textProperty().addListener((observable, oldValue, newValue) -> {
+            previewCheckBox.setSelected(false);
+            if(yEqualZ.isSelected()) {
+                maxY.textProperty().setValue(newValue);
+            }
+        });
+
+//        previewCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+//            if(newValue) {
+//                updatePreview();
+//            } else {
+//                showDefaultPreview();
+//            }
+//        });
+
+        previewCheckBox.setOnMouseClicked(event -> {
             if(previewCheckBox.isSelected()) {
                 updatePreview();
             } else {
@@ -94,16 +182,18 @@ public class RootLayoutController implements Initializable{
         showDefaultPreview();
     }
 
-    private void showDefaultPreview() {
-
-        Image default_preview;// = new Image("/Users/Max/Documents/workspace/Visual_Synthesizer/preview.png");
+    private void initDefaultPreview() {
         try {
             default_preview = new Image(new FileInputStream("preview.png"));
-        preview.setImage(default_preview);
+            preview.setImage(default_preview);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
+    }
+
+    private void showDefaultPreview() {
+        preview.setImage(default_preview);
     }
 
     private void updatePreview() {
@@ -124,28 +214,19 @@ public class RootLayoutController implements Initializable{
         double[] min = new double[2];
         double[] max = new double[2];
 
-        if(equalCheckBox.isSelected()) {
-            String minFromGUI = minX.getText().replaceAll("[^-\\d.]", "");
-            double x_min = minFromGUI.equals("")?0:Double.parseDouble(minFromGUI);
-            String maxFromGUI = maxX.getText().replaceAll("[^\\d.]", "");
-            double x_max = maxFromGUI.equals("")?width>height?width-1:height-1:Double.parseDouble(maxFromGUI);
-            min[0] = min[1] = x_min;
-            max[0] = max[1] = x_max;
-        } else {
-            String x_minFromGUI = minX.getText().replaceAll("[^-\\d.]", "");
-            double x_min = x_minFromGUI.equals("")?0:Double.parseDouble(x_minFromGUI);
-            String x_maxFromGUI = maxX.getText().replaceAll("[^\\d.]", "");
-            double x_max = x_maxFromGUI.equals("")?width>height?width-1:height-1:Double.parseDouble(x_maxFromGUI);
-            min[0] = x_min;
-            max[0] = x_max;
+        String x_minFromGUI = minX.getText().replaceAll("[^-\\d.]", "");
+        double x_min = x_minFromGUI.equals("")?0:Double.parseDouble(x_minFromGUI);
+        String x_maxFromGUI = maxX.getText().replaceAll("[^-\\d.]", "");
+        double x_max = x_maxFromGUI.equals("")?width>height?width-1:height-1:Double.parseDouble(x_maxFromGUI);
+        min[0] = x_min;
+        max[0] = x_max;
 
-            String y_minFromGUI = minY.getText().replaceAll("[^-\\d.]", "");
-            double y_min = y_minFromGUI.equals("")?0:Double.parseDouble(y_minFromGUI);
-            String y_maxFromGUI = maxY.getText().replaceAll("[^\\d.]", "");
-            double y_max = y_maxFromGUI.equals("")?width>height?width-1:height-1:Double.parseDouble(y_maxFromGUI);
-            min[1] = y_min;
-            max[1] = y_max;
-        }
+        String y_minFromGUI = minY.getText().replaceAll("[^-\\d.]", "");
+        double y_min = y_minFromGUI.equals("")?0:Double.parseDouble(y_minFromGUI);
+        String y_maxFromGUI = maxY.getText().replaceAll("[^-\\d.]", "");
+        double y_max = y_maxFromGUI.equals("")?width>height?width-1:height-1:Double.parseDouble(y_maxFromGUI);
+        min[1] = y_min;
+        max[1] = y_max;
 
         // function
         String function = functionTextArea.getText();
@@ -158,7 +239,6 @@ public class RootLayoutController implements Initializable{
 
         // GUI
         // meta
-        String title = titleTextField.getCharacters().toString();
         String type = typeChoiceBox.getValue() + " " + fillChoiceBox.getValue();
 
         // size
@@ -170,41 +250,33 @@ public class RootLayoutController implements Initializable{
         double[] min = new double[3];
         double[] max = new double[3];
 
-        if(equalCheckBox.isSelected()) {
-            String minFromGUI = minX.getText().replaceAll("[^-\\d.]", "");
-            double x_min = minFromGUI.equals("")?0:Double.parseDouble(minFromGUI);
-            String maxFromGUI = maxX.getText().replaceAll("[^\\d.]", "");
-            double x_max = maxFromGUI.equals("")?width>height?width-1:height-1:Double.parseDouble(maxFromGUI);
-            min[0] = min[1] = min[2] = x_min;
-            max[0] = max[1] = max[2] = x_max;
-        } else {
-            String x_minFromGUI = minX.getText().replaceAll("[^-\\d.]", "");
-            double x_min = x_minFromGUI.equals("")?0:Double.parseDouble(x_minFromGUI);
-            String x_maxFromGUI = maxX.getText().replaceAll("[^\\d.]", "");
-            double x_max = x_maxFromGUI.equals("")?width>height?width-1:height-1:Double.parseDouble(x_maxFromGUI);
-            min[0] = x_min;
-            max[0] = x_max;
+        String x_minFromGUI = minX.getText().replaceAll("[^-\\d.]", "");
+        double x_min = x_minFromGUI.equals("")?0:Double.parseDouble(x_minFromGUI);
+        String x_maxFromGUI = maxX.getText().replaceAll("[^-\\d.]", "");
+        double x_max = x_maxFromGUI.equals("")?width-1:Double.parseDouble(x_maxFromGUI);
+        min[0] = x_min;
+        max[0] = x_max;
 
-            String y_minFromGUI = minY.getText().replaceAll("[^-\\d.]", "");
-            double y_min = y_minFromGUI.equals("")?0:Double.parseDouble(y_minFromGUI);
-            String y_maxFromGUI = maxY.getText().replaceAll("[^\\d.]", "");
-            double y_max = y_maxFromGUI.equals("")?width>height?width-1:height-1:Double.parseDouble(y_maxFromGUI);
-            min[1] = y_min;
-            max[1] = y_max;
+        String y_minFromGUI = minY.getText().replaceAll("[^-\\d.]", "");
+        double y_min = y_minFromGUI.equals("")?0:Double.parseDouble(y_minFromGUI);
+        String y_maxFromGUI = maxY.getText().replaceAll("[^-\\d.]", "");
+        double y_max = y_maxFromGUI.equals("")?height-1:Double.parseDouble(y_maxFromGUI);
+        min[1] = y_min;
+        max[1] = y_max;
 
-            String z_minFromGUI = minZ.getText().replaceAll("[^-\\d.]", "");
-            double z_min = z_minFromGUI.equals("")?0:Double.parseDouble(z_minFromGUI);
-            String z_maxFromGUI = maxZ.getText().replaceAll("[^\\d.]", "");
-            double z_max = z_maxFromGUI.equals("")?width>height?width-1:height-1:Double.parseDouble(z_maxFromGUI);
-            min[2] = z_min;
-            max[2] = z_max;
-        }
+        String z_minFromGUI = minZ.getText().replaceAll("[^-\\d.]", "");
+        double z_min = z_minFromGUI.equals("")?0:Double.parseDouble(z_minFromGUI);
+        String z_maxFromGUI = maxZ.getText().replaceAll("[^-\\d.]", "");
+        double z_max = z_maxFromGUI.equals("")?slices-1:Double.parseDouble(z_maxFromGUI);
+        min[2] = z_min;
+        max[2] = z_max;
 
         // function
         String function = functionTextArea.getText();
 
         // apply
-        FIS.functionToImage(title, type, width, height, slices, min, max, function);
+        ImagePlus imagePlus = IJ.createImage(function, type, width, height, slices);
+        FIS.functionGrayToImage(imagePlus, min, max, function);
     }
 
     public void setContext(Context context) {
