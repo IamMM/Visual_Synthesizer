@@ -45,12 +45,8 @@
         </developer>
     </developers>
     <contributors>
-        <!--
-        NB: Need a least one element to override the parent.
-        See: https://issues.apache.org/jira/browse/MNG-5220
-        -->
         <contributor>
-            <name>None</name>
+            <name>Maximilian Maske</name>
         </contributor>
     </contributors>
 
@@ -77,7 +73,7 @@
             <groupId>org.scijava</groupId>
             <artifactId>scijava-common</artifactId>
         </dependency>
-        
+
         <!-- Enable IJ1 interface at runtime -->
         <dependency>
             <groupId>net.imagej</groupId>
