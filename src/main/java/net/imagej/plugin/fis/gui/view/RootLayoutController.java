@@ -209,10 +209,12 @@ public class RootLayoutController implements Initializable{
         // size
         int width = Integer.parseInt(widthTextField.getCharacters().toString().replaceAll("[^\\d.]", ""));
         int height = Integer.parseInt(heightTextField.getCharacters().toString().replaceAll("[^\\d.]", ""));
+        int slices = Integer.parseInt(slicesTextField.getCharacters().toString().replaceAll("[^\\d.]", ""));
 
         // coordinate range
-        double[] min = new double[2];
-        double[] max = new double[2];
+        double[] min = new double[3];
+        double[] max = new double[3];
+
 
         String x_minFromGUI = minX.getText().replaceAll("[^-\\d.]", "");
         double x_min = x_minFromGUI.equals("")?0:Double.parseDouble(x_minFromGUI);
@@ -228,10 +230,18 @@ public class RootLayoutController implements Initializable{
         min[1] = y_min;
         max[1] = y_max;
 
+        String z_minFromGUI = minZ.getText().replaceAll("[^-\\d.]", "");
+        double z_min = z_minFromGUI.equals("")?0:Double.parseDouble(z_minFromGUI);
+        String z_maxFromGUI = maxZ.getText().replaceAll("[^-\\d.]", "");
+        double z_max = z_maxFromGUI.equals("")?slices-1:Double.parseDouble(z_maxFromGUI);
+        min[2] = z_min;
+        max[2] = z_max;
+
         // function
         String function = functionTextArea.getText();
 
-        preview.setImage(FIS.getPreview(type, width, height, min, max, function));
+        ImagePlus imagePlus = IJ.createImage(function, type, width, height, slices);
+        preview.setImage(FIS.getPreview(imagePlus, min, max, function));
     }
 
     @FXML
@@ -276,7 +286,8 @@ public class RootLayoutController implements Initializable{
 
         // apply
         ImagePlus imagePlus = IJ.createImage(function, type, width, height, slices);
-        FIS.functionGrayToImage(imagePlus, min, max, function);
+        FIS.functionToImage(imagePlus, min, max, function);
+        imagePlus.show();
     }
 
     public void setContext(Context context) {
