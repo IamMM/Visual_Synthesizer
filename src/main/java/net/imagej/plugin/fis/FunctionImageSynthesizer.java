@@ -34,6 +34,7 @@ import ij.macro.Tokenizer;
 import ij.plugin.filter.ImageMath;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
+import ij.process.ShortProcessor;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
@@ -298,17 +299,29 @@ public class FunctionImageSynthesizer extends ImageMath {
     }
 
     private Image imagePlusToJavaFxImage (ImagePlus imagePlus) {
-        ImageProcessor ip = imagePlus.getImageStack().getProcessor(1);
+        ImageProcessor ip = imagePlus.getProcessor();
         int w = ip.getWidth();
         int h = ip.getHeight();
-        ByteProcessor bp = ip.convertToByteProcessor(true);
-        byte[] pixels = (byte[])bp.getPixels();
-        int[] values = new int[pixels.length];
-        for (int i = 0; i < pixels.length; i++) {
-            int value = pixels[i]&0xFF;
-            values[i] = 0xFF000000 | (value<<16) | (value<<8) | value;
+        int bitDepth = ip.getBitDepth();
+        ip.resetMinAndMax();
+        int[] values = new int[ip.getPixelCount()];
+        if(bitDepth==8)  {
+            byte[] pixels = (byte[])ip.getPixels();
+            for (int i = 0; i < pixels.length; i++) {
+                int value = pixels[i]&0xFF;
+                values[i] = 0xFF000000 | (value<<16) | (value<<8) | value;
+            }
+        } else if(bitDepth==16 || bitDepth==32){
+            ByteProcessor byteProcessor = ip.convertToByteProcessor(true);
+            byte[] pixels = (byte[])byteProcessor.getPixels();
+            for (int i = 0; i < pixels.length; i++) {
+                int value = pixels[i]&0xFF;
+                values[i] = 0xFF000000 | (value<<16) | (value<<8) | value;
+            }
+        } else if(bitDepth==24) {
+            values = (int[])ip.getPixels();
         }
-
+        
         WritableImage wr = new WritableImage(w, h);
         PixelWriter pw = wr.getPixelWriter();
         pw.setPixels(0, 0, w, h, PixelFormat.getIntArgbInstance(), values, 0, w);
