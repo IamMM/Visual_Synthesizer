@@ -6,13 +6,13 @@
 <?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ChoiceBox?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -37,11 +37,11 @@
       <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
    </padding>
    <center>
-      <VBox BorderPane.alignment="CENTER">
+      <VBox spacing="5.0" BorderPane.alignment="CENTER">
          <children>
             <HBox>
                <children>
-                  <VBox prefHeight="413.0" prefWidth="421.0" spacing="5.0">
+                  <VBox prefHeight="413.0" prefWidth="421.0" spacing="5.0" HBox.hgrow="ALWAYS">
                      <children>
                         <Label text="Settings" underline="true" />
                           <GridPane vgap="5.0">
@@ -55,12 +55,12 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                               </rowConstraints>
                               <children>
-                                  <Label text="Name:" />
-                                  <TextField fx:id="titleTextField" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="27.0" prefWidth="150.0" text="new_untiteld_image" GridPane.columnIndex="1" />
+                                  <Label text="Image:" />
                                   <Label text="Type:" GridPane.rowIndex="1" />
                                   <ChoiceBox fx:id="typeChoiceBox" prefHeight="27.0" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                               <Label text="Fill:" GridPane.rowIndex="2" />
                               <ChoiceBox fx:id="fillChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <ChoiceBox fx:id="imageChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" />
                               </children>
                           </GridPane>
                         <Separator prefWidth="200.0">
@@ -159,7 +159,7 @@
                            </children>
                         </GridPane>
                         <Label text="Point of origin" underline="true" />
-                        <ButtonBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="46.0" prefWidth="421.0">
+                        <ButtonBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="28.0" prefWidth="438.0">
                           <buttons>
                               <ToggleButton mnemonicParsing="false" text="Top">
                                  <toggleGroup>
@@ -205,24 +205,33 @@
                   <Insets bottom="10.0" top="10.0" />
                </VBox.margin>
             </Separator>
-            <Label text="Function" />
-            <HBox>
+            <HBox prefHeight="24.0" prefWidth="693.0">
                <children>
-                  <Label text="Presets">
-                     <padding>
-                        <Insets right="10.0" />
-                     </padding>
-                  </Label>
-                  <ComboBox prefWidth="150.0" />
-                  <Button mnemonicParsing="false" text="+" />
+                  <Label text="Function" underline="true" />
+                  <HBox alignment="TOP_RIGHT" spacing="5.0" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Label text="Presets">
+                           <padding>
+                              <Insets right="10.0" />
+                           </padding>
+                        </Label>
+                        <ChoiceBox fx:id="PresetsChoiceBox" prefWidth="250.0" />
+                        <Button fx:id="addPresetButton" mnemonicParsing="false" text="+" />
+                     </children>
+                  </HBox>
                </children>
-               <VBox.margin>
-                  <Insets top="10.0" />
-               </VBox.margin>
+            </HBox>
+            <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#openMacroHelp" text="?">
+                     <tooltip>
+                        <Tooltip text="...more functions you can use" />
+                     </tooltip></Button>
+               </children>
             </HBox>
             <TextArea fx:id="functionTextArea" text="sin(x)*sin(x)+sin(y)*sin(y)">
                <VBox.margin>
-                  <Insets top="10.0" />
+                  <Insets />
                </VBox.margin></TextArea>
          </children>
       </VBox>

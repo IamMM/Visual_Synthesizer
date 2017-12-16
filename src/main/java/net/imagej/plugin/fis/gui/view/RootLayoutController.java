@@ -28,13 +28,18 @@ import ij.ImagePlus;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import net.imagej.plugin.fis.FunctionImageSynthesizer;
 import org.scijava.Context;
 
+import java.awt.*;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -49,7 +54,7 @@ public class RootLayoutController implements Initializable{
     private Image default_preview;
 
     @FXML
-    private TextField titleTextField, widthTextField, heightTextField, slicesTextField;
+    private TextField widthTextField, heightTextField, slicesTextField;
 
     @FXML
     private TextField minX, minY, minZ;
@@ -292,6 +297,25 @@ public class RootLayoutController implements Initializable{
 
     public void setContext(Context context) {
         context.inject(this);
+    }
+
+    @FXML
+    private void openMacroHelp() {
+        URI uri = null;
+        try {
+            uri = new URI("https://imagej.nih.gov/ij/developer/macro/functions.html");
+            Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+            if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+                try {
+                    desktop.browse(uri);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+
     }
 
 }
