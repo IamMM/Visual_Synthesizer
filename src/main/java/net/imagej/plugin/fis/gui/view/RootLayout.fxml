@@ -225,7 +225,7 @@
                <children>
                   <Button mnemonicParsing="false" onAction="#openMacroHelp" text="?">
                      <tooltip>
-                        <Tooltip text="...more functions you can use" />
+                        <Tooltip text="...more functions" />
                      </tooltip></Button>
                </children>
             </HBox>
