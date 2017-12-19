@@ -34,9 +34,6 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = Command.class, menuPath = "Plugins>Function Image Synthesizer")
 public class Fis_Plugin implements Command {
 
-    // Constants
-    private static final int MAX_PREVIEW_SIZE = 128 ;
-
     @Parameter
     private static ImageJ ij;
 
