@@ -24,7 +24,10 @@
 package net.imagej.plugin.fis.gui.view;
 
 import ij.IJ;
+import ij.ImageListener;
 import ij.ImagePlus;
+import ij.WindowManager;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -32,6 +35,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import net.imagej.plugin.fis.FunctionImageSynthesizer;
 import org.scijava.Context;
 
@@ -48,10 +52,11 @@ import java.util.ResourceBundle;
  *
  * @author Hadrien Mary
  */
-public class RootLayoutController implements Initializable{
+public class RootLayoutController implements Initializable, ImageListener{
 
-    private FunctionImageSynthesizer FIS = new FunctionImageSynthesizer();
+    private final FunctionImageSynthesizer FIS = new FunctionImageSynthesizer();
     private Image default_preview;
+    private boolean doNewImage = true;
 
     @FXML
     private TextField widthTextField, heightTextField, slicesTextField;
@@ -63,7 +68,7 @@ public class RootLayoutController implements Initializable{
     private TextField maxX, maxY, maxZ;
 
     @FXML
-    private ChoiceBox<String> typeChoiceBox, fillChoiceBox;
+    private ChoiceBox<String> imageChoiceBox, typeChoiceBox, fillChoiceBox;
 
     @FXML
     private ToggleButton xEqualY, yEqualZ;
@@ -80,7 +85,11 @@ public class RootLayoutController implements Initializable{
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
+        ImagePlus.addImageListener(this);
+
         initDefaultPreview();
+
+        initImageList();
 
         // fill choice boxes
         String[] typeChoices = new String[]{"8-Bit", "16-Bit", "32-Bit", "RGB"};
@@ -92,16 +101,40 @@ public class RootLayoutController implements Initializable{
         fillChoiceBox.setValue("Black");
 
         // init change listener
-        widthTextField.textProperty().addListener((observable -> previewCheckBox.setSelected(false)));
-        heightTextField.textProperty().addListener((observable -> previewCheckBox.setSelected(false)));
-        slicesTextField.textProperty().addListener(observable -> previewCheckBox.setSelected(false));
+        imageChoiceBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            doNewImage = newValue.equals("new image...");
+            if(!doNewImage) {
+                ImagePlus tmp = WindowManager.getImage(imageChoiceBox.getValue());
+                typeChoiceBox.setValue(getTypeString(tmp.getType()));
+                widthTextField.textProperty().setValue(""+tmp.getWidth());
+                heightTextField.textProperty().setValue(""+tmp.getHeight());
+                slicesTextField.textProperty().setValue(""+tmp.getNSlices());
+            }
+            typeChoiceBox.disableProperty().setValue(!doNewImage);
+            fillChoiceBox.disableProperty().setValue(!doNewImage);
+            widthTextField.disableProperty().setValue(!doNewImage);
+            heightTextField.disableProperty().setValue(!doNewImage);
+            slicesTextField.disableProperty().setValue(!doNewImage);
+            updatePreview();
+        });
+
+        typeChoiceBox.valueProperty().addListener(observable -> updatePreview());
+        fillChoiceBox.valueProperty().addListener(observable -> updatePreview());
+        widthTextField.focusedProperty().addListener((observable -> updatePreview()));
+        heightTextField.focusedProperty().addListener((observable -> updatePreview()));
+        slicesTextField.focusedProperty().addListener(observable -> updatePreview());
+        minX.focusedProperty().addListener(observable -> updatePreview());
+        maxX.focusedProperty().addListener(observable -> updatePreview());
+        maxY.focusedProperty().addListener(observable -> updatePreview());
+        minZ.focusedProperty().addListener(observable -> updatePreview());
+        maxZ.focusedProperty().addListener(observable -> updatePreview());
 
         xEqualY.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue) {
                 xEqualY.textProperty().setValue("=");
                 minY.textProperty().setValue(minX.textProperty().getValue());
                 maxY.textProperty().setValue(maxX.textProperty().getValue());
-                previewCheckBox.setSelected(false);
+                updatePreview();
             } else {
                 xEqualY.textProperty().setValue("≠");
             }
@@ -112,28 +145,25 @@ public class RootLayoutController implements Initializable{
                 yEqualZ.textProperty().setValue("=");
                 minZ.textProperty().setValue(minY.textProperty().getValue());
                 maxZ.textProperty().setValue(maxY.textProperty().getValue());
-                previewCheckBox.setSelected(false);
+                updatePreview();
             } else {
                 yEqualZ.textProperty().setValue("≠");
             }
         });
 
         minX.textProperty().addListener((observable, oldValue, newValue) -> {
-            previewCheckBox.setSelected(false);
             if(xEqualY.isSelected()) {
                 minY.textProperty().setValue(newValue);
             }
         });
 
         maxX.textProperty().addListener((observable, oldValue, newValue) -> {
-            previewCheckBox.setSelected(false);
             if(xEqualY.isSelected()) {
                 maxY.textProperty().setValue(newValue);
             }
         });
 
         minY.textProperty().addListener((observable, oldValue, newValue) -> {
-            previewCheckBox.setSelected(false);
             if(xEqualY.isSelected()) {
                 minX.textProperty().setValue(newValue);
             }
@@ -144,7 +174,6 @@ public class RootLayoutController implements Initializable{
         });
 
         maxY.textProperty().addListener((observable, oldValue, newValue) -> {
-            previewCheckBox.setSelected(false);
             if(xEqualY.isSelected()) {
                 maxY.textProperty().setValue(newValue);
             }
@@ -155,29 +184,19 @@ public class RootLayoutController implements Initializable{
         });
 
         minZ.textProperty().addListener((observable, oldValue, newValue) -> {
-            previewCheckBox.setSelected(false);
             if(yEqualZ.isSelected()) {
                 minY.textProperty().setValue(newValue);
             }
         });
 
         maxZ.textProperty().addListener((observable, oldValue, newValue) -> {
-            previewCheckBox.setSelected(false);
             if(yEqualZ.isSelected()) {
                 maxY.textProperty().setValue(newValue);
             }
         });
 
-//        previewCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
-//            if(newValue) {
-//                updatePreview();
-//            } else {
-//                showDefaultPreview();
-//            }
-//        });
-
-        previewCheckBox.setOnMouseClicked(event -> {
-            if(previewCheckBox.isSelected()) {
+        previewCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue) {
                 updatePreview();
             } else {
                 showDefaultPreview();
@@ -185,6 +204,16 @@ public class RootLayoutController implements Initializable{
         });
 
         showDefaultPreview();
+    }
+
+    private String getTypeString(int type) {
+        switch (type){
+            case ImagePlus.GRAY8: return "8-Bit";
+            case ImagePlus.GRAY16: return "16-Bit";
+            case ImagePlus.GRAY32: return "32-Bit";
+            default: return "RGB";
+
+        }
     }
 
     private void initDefaultPreview() {
@@ -245,7 +274,12 @@ public class RootLayoutController implements Initializable{
         // function
         String function = functionTextArea.getText();
 
-        ImagePlus imagePlus = IJ.createImage(function, type, width, height, slices);
+        ImagePlus imagePlus;
+        if(doNewImage) {
+            imagePlus = IJ.createImage(function, type, width, height, slices);
+        } else {
+            imagePlus = WindowManager.getImage(imageChoiceBox.getValue()).duplicate();
+        }
         preview.setImage(FIS.getPreview(imagePlus, min, max, function));
     }
 
@@ -290,7 +324,13 @@ public class RootLayoutController implements Initializable{
         String function = functionTextArea.getText();
 
         // apply
-        ImagePlus imagePlus = IJ.createImage(function, type, width, height, slices);
+        ImagePlus imagePlus;
+        if(doNewImage) {
+            imagePlus = IJ.createImage(function, type, width, height, slices);
+        } else {
+            imagePlus = WindowManager.getImage(imageChoiceBox.getValue()).duplicate();
+            imagePlus.setTitle(function);
+        }
         FIS.functionToImage(imagePlus, min, max, function);
         imagePlus.show();
     }
@@ -318,4 +358,42 @@ public class RootLayoutController implements Initializable{
 
     }
 
+    private void initImageList() {
+        String[] titles = WindowManager.getImageTitles();
+        imageChoiceBox.getItems().add("new image...");
+        imageChoiceBox.getItems().addAll(titles);
+        imageChoiceBox.setValue("new image...");
+    }
+
+    @Override
+    public void imageOpened(ImagePlus imp) {
+        imageChoiceBox.getItems().add(imp.getTitle());
+    }
+
+    @Override
+    public void imageClosed(ImagePlus imp) {
+        // Avoid throwing IllegalStateException by running from a non-JavaFX thread.
+        Platform.runLater(() -> {
+            if (imp.getTitle().equals(imageChoiceBox.getValue())) {
+                imageChoiceBox.valueProperty().setValue("new image...");
+            }
+            imageChoiceBox.getItems().remove(imp.getTitle());
+        });
+    }
+
+    @Override
+    public void imageUpdated(ImagePlus imp) {
+        // TODO update imageChoiceBox when imp was renamed
+        // Avoid throwing IllegalStateException by running from a non-JavaFX thread.
+        Platform.runLater(() -> {
+            if(imageChoiceBox.getValue().equals(imp.getTitle())) {
+                System.out.println(imp.getTitle());
+                typeChoiceBox.setValue(getTypeString(imp.getType()));
+                widthTextField.textProperty().setValue(""+imp.getWidth());
+                heightTextField.textProperty().setValue(""+imp.getHeight());
+                slicesTextField.textProperty().setValue(""+imp.getNSlices());
+                updatePreview();
+            }
+        });
+    }
 }
