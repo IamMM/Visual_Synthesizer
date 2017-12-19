@@ -34,7 +34,6 @@ import ij.macro.Tokenizer;
 import ij.plugin.filter.ImageMath;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
-import ij.process.ShortProcessor;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
@@ -289,8 +288,13 @@ public class FunctionImageSynthesizer extends ImageMath {
             width = width*MAX_PREVIEW_SIZE/height;
             height = MAX_PREVIEW_SIZE;
         }
+        ImageProcessor ip = imagePlus.getProcessor();
+        ip.setInterpolate(true);
+        ImageProcessor resized = ip.resize(width, height);
 
-        ImagePlus preview = IJ.createImage("", width, height, 1, imagePlus.getBitDepth());
+
+        ImagePlus preview = new ImagePlus();
+        preview.setProcessor(resized);
         String macro = "code=v=" + function;
         applyMacro(preview, macro, min, max);
 
