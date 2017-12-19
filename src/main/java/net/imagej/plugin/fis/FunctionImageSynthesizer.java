@@ -346,17 +346,16 @@ public class FunctionImageSynthesizer extends ImageMath {
         colorProcessor.setColor(Color.GREEN);
 
         // x axis
-        double xrange = Math.abs(min[0] - max[0]);
-        int xAxisHeight = (int) Math.abs((min[0]*height)/xrange);
-        xAxisHeight = xAxisHeight==0?1:xAxisHeight;
-        colorProcessor.drawLine(0,xAxisHeight,width,xAxisHeight);
+        double xrange = Math.abs(min[0]) + Math.abs(max[0]);
+        int xAxisPos = (int) Math.abs((min[0]*height)/xrange);
+        xAxisPos = xAxisPos==height?xAxisPos-1:xAxisPos;
+        colorProcessor.drawLine(xAxisPos,0,xAxisPos,height);
 
         // y axis
-        double yrange = Math.abs(min[1] - max[1]);
-        int yAxisHeight = (int) Math.abs((min[1]*width)/yrange);
-        yAxisHeight = yAxisHeight==0?1:xAxisHeight;
-        colorProcessor.drawLine(yAxisHeight,0,yAxisHeight,height);
-
+        double yrange = Math.abs(min[1]) + Math.abs(max[1]);
+        int yAxisPos = (int) Math.abs((min[1]*width)/yrange);
+        yAxisPos = yAxisPos==width?yAxisPos-1:yAxisPos;
+        colorProcessor.drawLine(0,yAxisPos,width,yAxisPos);
     }
 
     private Image imagePlusToJavaFxImage (ImagePlus imagePlus, double[] min, double[]max, boolean drawAxes) {
