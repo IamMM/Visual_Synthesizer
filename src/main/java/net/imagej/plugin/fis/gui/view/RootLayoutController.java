@@ -28,6 +28,7 @@ import ij.ImageListener;
 import ij.ImagePlus;
 import ij.WindowManager;
 import javafx.application.Platform;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -39,7 +40,9 @@ import javafx.scene.layout.BorderPane;
 import net.imagej.plugin.fis.FunctionImageSynthesizer;
 import org.scijava.Context;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URI;
@@ -217,6 +220,16 @@ public class RootLayoutController implements Initializable, ImageListener{
     }
 
     private void initDefaultPreview() {
+//        URL url = null;
+//        try {
+//            url = getClass().getResource("/preview.png");
+//            BufferedImage img = ImageIO.read(url);
+//            default_preview = SwingFXUtils.toFXImage(img, null);
+//            preview.setImage(default_preview);
+//        }catch (Exception e) {
+//            e.printStackTrace();
+//        }
+
         try {
             default_preview = new Image(new FileInputStream("preview.png"));
             preview.setImage(default_preview);
@@ -332,6 +345,7 @@ public class RootLayoutController implements Initializable, ImageListener{
             imagePlus.setTitle(function);
         }
         FIS.functionToImage(imagePlus, min, max, function);
+        IJ.resetMinAndMax(imagePlus);
         imagePlus.show();
     }
 
