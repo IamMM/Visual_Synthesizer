@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    
+
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -14,61 +14,40 @@
     <artifactId>Function_Image_Synthesizer</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
-    <name>JavaFX plugin for ImageJ</name>
-    <description>A minimal ImageJ2 plugin that use JavaFX for its graphical interface.</description>
-    
-    <url>https://github.com/hadim/imagej-plugin-javafx</url>
-    <inceptionYear>2016</inceptionYear>
-    <licenses>
-        <license>
-            <name>MIT License</name>
-            <url>http://choosealicense.com/licenses/mit/</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-    
+    <name>Function Image Synthesizer</name>
+    <description>A plugin for imageJ to synthesize images out of functions.</description>
+
     <developers>
         <developer>
-            <id>hadim</id>
-            <name>Hadrien Mary</name>
-            <url>http://imagej.net/User:Hadim</url>
+            <id>mm</id>
+            <name>Maximilian Maske</name>
             <roles>
-                <role>founder</role>
-                <role>lead</role>
                 <role>developer</role>
-                <role>debugger</role>
-                <role>reviewer</role>
-                <role>support</role>
-                <role>maintainer</role>
             </roles>
-            <timezone>-5</timezone>
+            <timezone>+1</timezone>
         </developer>
     </developers>
-    <contributors>
-        <contributor>
-            <name>Maximilian Maske</name>
-        </contributor>
-    </contributors>
 
     <scm>
-        <connection>scm:git:git://github.com/hadim/imagej-plugin-javafx</connection>
-        <developerConnection>scm:git:git@github.com:hadim/imagej-plugin-javafx</developerConnection>
+        <connection>scm:git:git:github.com/IamMM</connection>
+        <developerConnection>scm:git:git@github.com:IamMM</developerConnection>
         <tag>HEAD</tag>
-        <url>https://github.com/hadim/imagej-plugin-javafx</url>
+        <url>https://github.com/IamMM/Visual_Synthesizer</url>
     </scm>
-    <issueManagement>
-        <system>GitHub Issues</system>
-        <url>https://github.com/hadim/imagej-plugin-javafx/issues</url>
-    </issueManagement>
-    
+
+    <properties>
+        <main-class>FunctionImageSynthesizer</main-class>
+    </properties>
+
+
     <dependencies>
-        
+
         <!--ImageJ-->
         <dependency>
             <groupId>net.imagej</groupId>
             <artifactId>imagej</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>org.scijava</groupId>
             <artifactId>scijava-common</artifactId>
@@ -95,18 +74,9 @@
             <url>http://maven.imagej.net/content/groups/public</url>
         </repository>
     </repositories>
-    
+
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>license-maven-plugin</artifactId>
-                <configuration>
-                    <licenseName>mit</licenseName>
-                    <projectName>${project.description}</projectName>
-                    <organizationName>Hadrien Mary</organizationName>
-                </configuration>
-            </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
@@ -124,5 +94,5 @@
             </resource>
         </resources>
     </build>
-  
+
 </project>
