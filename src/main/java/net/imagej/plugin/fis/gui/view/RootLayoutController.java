@@ -28,21 +28,18 @@ import ij.ImageListener;
 import ij.ImagePlus;
 import ij.WindowManager;
 import javafx.application.Platform;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
 import net.imagej.plugin.fis.FunctionImageSynthesizer;
 import org.scijava.Context;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URI;
@@ -80,10 +77,10 @@ public class RootLayoutController implements Initializable, ImageListener{
     private ImageView preview;
 
     @FXML
-    private CheckBox previewCheckBox;
+    private CheckBox previewCheckBox, drawAxesCheckBox;
 
     @FXML
-    private TextArea functionTextArea;
+    private TextField functionTextArea;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -199,12 +196,15 @@ public class RootLayoutController implements Initializable, ImageListener{
         });
 
         previewCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            drawAxesCheckBox.setDisable(!newValue);
             if(newValue) {
                 updatePreview();
             } else {
                 showDefaultPreview();
             }
         });
+
+        drawAxesCheckBox.selectedProperty().addListener(observable -> updatePreview());
 
         showDefaultPreview();
     }
@@ -251,7 +251,7 @@ public class RootLayoutController implements Initializable, ImageListener{
 
         // GUI
         // meta
-        String type = typeChoiceBox.getValue();
+        String type = typeChoiceBox.getValue() + " " + fillChoiceBox.getValue();
 
         // size
         int width = Integer.parseInt(widthTextField.getCharacters().toString().replaceAll("[^\\d.]", ""));
@@ -293,7 +293,10 @@ public class RootLayoutController implements Initializable, ImageListener{
         } else {
             imagePlus = WindowManager.getImage(imageChoiceBox.getValue()).duplicate();
         }
-        preview.setImage(FIS.getPreview(imagePlus, min, max, function));
+
+        Image previewImage = FIS.getPreview(imagePlus, min, max, function, drawAxesCheckBox.isSelected());
+
+        preview.setImage(previewImage);
     }
 
     @FXML
