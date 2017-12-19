@@ -8,7 +8,6 @@
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToggleGroup?>
@@ -18,13 +17,12 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="597.0" prefWidth="713.0" xmlns="http://javafx.com/javafx/8.0.66" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.imagej.plugin.fis.gui.view.RootLayoutController">
+<BorderPane prefHeight="608.0" prefWidth="713.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.imagej.plugin.fis.gui.view.RootLayoutController">
    <bottom>
-      <ButtonBar BorderPane.alignment="CENTER">
+      <ButtonBar prefWidth="693.0" BorderPane.alignment="CENTER">
         <buttons>
                 <Button fx:id="OKButton" alignment="CENTER" mnemonicParsing="false" onAction="#handleButtonAction" text="OK" />
         </buttons>
@@ -41,7 +39,7 @@
          <children>
             <HBox>
                <children>
-                  <VBox prefHeight="413.0" prefWidth="421.0" spacing="5.0" HBox.hgrow="ALWAYS">
+                  <VBox prefHeight="300.0" prefWidth="427.0" spacing="5.0" HBox.hgrow="ALWAYS">
                      <children>
                         <Label text="Settings" underline="true" />
                           <GridPane vgap="5.0">
@@ -172,19 +170,15 @@
                         </ButtonBar>
                      </children>
                   </VBox>
-                  <VBox alignment="TOP_RIGHT" prefHeight="279.0" prefWidth="255.0" spacing="10.0">
+                  <VBox alignment="TOP_CENTER" prefHeight="279.0" prefWidth="255.0" spacing="10.0">
                      <children>
-                        <Pane prefHeight="256.0" prefWidth="256.0">
-                           <children>
-                              <ImageView fx:id="preview" fitHeight="256.0" fitWidth="256.0" pickOnBounds="true" preserveRatio="true" />
-                           </children>
-                        </Pane>
+                        <ImageView fx:id="preview" fitHeight="256.0" fitWidth="256.0" pickOnBounds="true" preserveRatio="true" />
                         <ButtonBar nodeOrientation="LEFT_TO_RIGHT" prefHeight="40.0" prefWidth="200.0">
                           <buttons>
                               <VBox prefHeight="200.0" prefWidth="100.0" spacing="5.0">
                                  <children>
                                     <CheckBox fx:id="previewCheckBox" alignment="BOTTOM_RIGHT" contentDisplay="RIGHT" focusTraversable="false" mnemonicParsing="false" text="Preview" textAlignment="CENTER" />
-                                    <CheckBox fx:id="drawAxisCheckBox" alignment="BOTTOM_RIGHT" contentDisplay="RIGHT" disable="true" focusTraversable="false" mnemonicParsing="false" selected="true" text="show axes" textAlignment="CENTER" />
+                                    <CheckBox fx:id="drawAxesCheckBox" alignment="BOTTOM_RIGHT" contentDisplay="RIGHT" disable="true" focusTraversable="false" mnemonicParsing="false" selected="true" text="show axes" textAlignment="CENTER" />
                                     <CheckBox fx:id="drawScaleCheckBox" alignment="BOTTOM_RIGHT" contentDisplay="RIGHT" disable="true" focusTraversable="false" layoutX="10.0" layoutY="33.0" mnemonicParsing="false" selected="true" text="show scale" textAlignment="CENTER" />
                                  </children>
                               </VBox>
@@ -221,18 +215,72 @@
                   </HBox>
                </children>
             </HBox>
-            <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
+            <HBox alignment="CENTER_LEFT" prefHeight="64.0" prefWidth="693.0" spacing="5.0">
                <children>
-                  <Button mnemonicParsing="false" onAction="#openMacroHelp" text="?">
-                     <tooltip>
-                        <Tooltip text="...more functions" />
-                     </tooltip></Button>
+                  <GridPane alignment="CENTER" hgap="5.0" vgap="2.0">
+                    <columnConstraints>
+                      <ColumnConstraints fillWidth="false" hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints />
+                      <RowConstraints />
+                        <RowConstraints />
+                    </rowConstraints>
+                     <children>
+                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="sin" />
+                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="cos" GridPane.columnIndex="1" />
+                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="tan" GridPane.columnIndex="2" />
+                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="e" GridPane.columnIndex="3" />
+                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="abs" GridPane.columnIndex="4" />
+                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="x^n" GridPane.columnIndex="5" />
+                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="asin" GridPane.rowIndex="2" />
+                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="acos" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="atan" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="π" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="√" GridPane.columnIndex="4" GridPane.rowIndex="2" />
+                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="log" GridPane.columnIndex="5" GridPane.rowIndex="2" />
+                     </children>
+                  </GridPane>
+                  <Separator orientation="VERTICAL" prefHeight="200.0" />
+                  <GridPane alignment="CENTER" hgap="5.0" vgap="2.0">
+                     <columnConstraints>
+                        <ColumnConstraints fillWidth="false" hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                     </rowConstraints>
+                     <children>
+                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="x" />
+                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="y" GridPane.columnIndex="1" />
+                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="z" GridPane.columnIndex="2" />
+                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="d" GridPane.rowIndex="2" />
+                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="a" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="b" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                     </children>
+                  </GridPane>
+                  <HBox alignment="BOTTOM_RIGHT" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#openMacroHelp" prefHeight="27.0" prefWidth="27.0" text="?">
+                           <tooltip>
+                              <Tooltip text="...more functions" />
+                           </tooltip>
+                        </Button>
+                     </children>
+                  </HBox>
                </children>
             </HBox>
-            <TextArea fx:id="functionTextArea" text="sin(x)*sin(x)+sin(y)*sin(y)">
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin></TextArea>
+            <TextField fx:id="functionTextArea" text="sin(x)+sin(y)+sin(z)" />
+            <TextField layoutX="10.0" layoutY="528.0" />
+            <TextField layoutX="10.0" layoutY="528.0" />
          </children>
       </VBox>
    </center>
