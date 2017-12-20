@@ -40,8 +40,6 @@ import net.imagej.plugin.fis.FunctionImageSynthesizer;
 import org.scijava.Context;
 
 import java.awt.*;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -55,7 +53,6 @@ import java.util.ResourceBundle;
 public class RootLayoutController implements Initializable, ImageListener{
 
     private final FunctionImageSynthesizer FIS = new FunctionImageSynthesizer();
-    private Image default_preview;
     private boolean doNewImage = true;
 
     @FXML
@@ -68,7 +65,7 @@ public class RootLayoutController implements Initializable, ImageListener{
     private TextField maxX, maxY, maxZ;
 
     @FXML
-    private ChoiceBox<String> imageChoiceBox, typeChoiceBox, fillChoiceBox;
+    private ChoiceBox<String> imageChoiceBox, typeChoiceBox;
 
     @FXML
     private ToggleButton xEqualY, yEqualZ;
@@ -77,17 +74,15 @@ public class RootLayoutController implements Initializable, ImageListener{
     private ImageView preview;
 
     @FXML
-    private CheckBox previewCheckBox, drawAxesCheckBox;
+    private CheckBox drawAxesCheckBox;
 
     @FXML
-    private TextField functionTextArea;
+    private TextField functionTextField1;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
         ImagePlus.addImageListener(this);
-
-        initDefaultPreview();
 
         initImageList();
 
@@ -95,10 +90,6 @@ public class RootLayoutController implements Initializable, ImageListener{
         String[] typeChoices = new String[]{"8-Bit", "16-Bit", "32-Bit", "RGB"};
         typeChoiceBox.getItems().addAll(typeChoices);
         typeChoiceBox.setValue("32-Bit");
-
-        String[] fillChoices = new String[]{"Black", "White", "Random", "Ramp"};
-        fillChoiceBox.getItems().addAll(fillChoices);
-        fillChoiceBox.setValue("Black");
 
         // init change listener
         imageChoiceBox.valueProperty().addListener((observable, oldValue, newValue) -> {
@@ -111,7 +102,6 @@ public class RootLayoutController implements Initializable, ImageListener{
                 slicesTextField.textProperty().setValue(""+tmp.getNSlices());
             }
             typeChoiceBox.disableProperty().setValue(!doNewImage);
-            fillChoiceBox.disableProperty().setValue(!doNewImage);
             widthTextField.disableProperty().setValue(!doNewImage);
             heightTextField.disableProperty().setValue(!doNewImage);
             slicesTextField.disableProperty().setValue(!doNewImage);
@@ -119,7 +109,6 @@ public class RootLayoutController implements Initializable, ImageListener{
         });
 
         typeChoiceBox.valueProperty().addListener(observable -> updatePreview());
-        fillChoiceBox.valueProperty().addListener(observable -> updatePreview());
         widthTextField.focusedProperty().addListener((observable -> updatePreview()));
         heightTextField.focusedProperty().addListener((observable -> updatePreview()));
         slicesTextField.focusedProperty().addListener(observable -> updatePreview());
@@ -195,18 +184,9 @@ public class RootLayoutController implements Initializable, ImageListener{
             }
         });
 
-        previewCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            drawAxesCheckBox.setDisable(!newValue);
-            if(newValue) {
-                updatePreview();
-            } else {
-                showDefaultPreview();
-            }
-        });
-
         drawAxesCheckBox.selectedProperty().addListener(observable -> updatePreview());
 
-        showDefaultPreview();
+        updatePreview();
     }
 
     private String getTypeString(int type) {
@@ -219,39 +199,9 @@ public class RootLayoutController implements Initializable, ImageListener{
         }
     }
 
-    private void initDefaultPreview() {
-//        URL url = null;
-//        try {
-//            url = getClass().getResource("/preview.png");
-//            BufferedImage img = ImageIO.read(url);
-//            default_preview = SwingFXUtils.toFXImage(img, null);
-//            preview.setImage(default_preview);
-//        }catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
-        try {
-            default_preview = new Image(new FileInputStream("preview.png"));
-            preview.setImage(default_preview);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    private void showDefaultPreview() {
-        preview.setImage(default_preview);
-    }
-
     private void updatePreview() {
-
-        if(!previewCheckBox.isSelected()){
-            return;
-        }
-
         // GUI
-        // meta
-        String type = typeChoiceBox.getValue() + " " + fillChoiceBox.getValue();
+        String type = typeChoiceBox.getValue();
 
         // size
         int width = Integer.parseInt(widthTextField.getCharacters().toString().replaceAll("[^\\d.]", ""));
@@ -285,7 +235,7 @@ public class RootLayoutController implements Initializable, ImageListener{
         max[2] = z_max;
 
         // function
-        String function = functionTextArea.getText();
+        String function = functionTextField1.getText();
 
         ImagePlus imagePlus;
         if(doNewImage) {
@@ -304,7 +254,7 @@ public class RootLayoutController implements Initializable, ImageListener{
 
         // GUI
         // meta
-        String type = typeChoiceBox.getValue() + " " + fillChoiceBox.getValue();
+        String type = typeChoiceBox.getValue();
 
         // size
         int width = Integer.parseInt(widthTextField.getCharacters().toString().replaceAll("[^\\d.]", ""));
@@ -337,7 +287,7 @@ public class RootLayoutController implements Initializable, ImageListener{
         max[2] = z_max;
 
         // function
-        String function = functionTextArea.getText();
+        String function = functionTextField1.getText();
 
         // apply
         ImagePlus imagePlus;
@@ -358,7 +308,7 @@ public class RootLayoutController implements Initializable, ImageListener{
 
     @FXML
     private void openMacroHelp() {
-        URI uri = null;
+        URI uri;
         try {
             uri = new URI("https://imagej.nih.gov/ij/developer/macro/functions.html");
             Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
@@ -372,7 +322,6 @@ public class RootLayoutController implements Initializable, ImageListener{
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-
     }
 
     private void initImageList() {
@@ -400,7 +349,6 @@ public class RootLayoutController implements Initializable, ImageListener{
 
     @Override
     public void imageUpdated(ImagePlus imp) {
-        // TODO update imageChoiceBox when imp was renamed
         // Avoid throwing IllegalStateException by running from a non-JavaFX thread.
         Platform.runLater(() -> {
             if(imageChoiceBox.getValue().equals(imp.getTitle())) {

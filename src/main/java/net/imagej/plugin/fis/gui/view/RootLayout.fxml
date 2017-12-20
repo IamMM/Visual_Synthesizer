@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.CheckBox?>
@@ -10,7 +9,6 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleButton?>
-<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
@@ -20,11 +18,12 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="608.0" prefWidth="713.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.imagej.plugin.fis.gui.view.RootLayoutController">
+<BorderPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.imagej.plugin.fis.gui.view.RootLayoutController">
    <bottom>
       <ButtonBar prefWidth="693.0" BorderPane.alignment="CENTER">
         <buttons>
-                <Button fx:id="OKButton" alignment="CENTER" mnemonicParsing="false" onAction="#handleButtonAction" text="OK" />
+            <Button fx:id="previewButton" mnemonicParsing="false" text="Preview" />
+                <Button fx:id="OKButton" alignment="CENTER" mnemonicParsing="false" onAction="#handleButtonAction" text="Generate" />
         </buttons>
          <BorderPane.margin>
             <Insets top="5.0" />
@@ -39,151 +38,78 @@
          <children>
             <HBox>
                <children>
-                  <VBox prefHeight="300.0" prefWidth="427.0" spacing="5.0" HBox.hgrow="ALWAYS">
+                  <VBox prefHeight="284.0" prefWidth="368.0" spacing="5.0" HBox.hgrow="ALWAYS">
                      <children>
-                        <Label text="Settings" underline="true" />
-                          <GridPane vgap="5.0">
-                              <columnConstraints>
-                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="128.0" minWidth="10.0" prefWidth="116.0" />
-                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="213.0" minWidth="10.0" prefWidth="147.0" />
-                              </columnConstraints>
-                              <rowConstraints>
-                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                              </rowConstraints>
-                              <children>
-                                  <Label text="Image:" />
-                                  <Label text="Type:" GridPane.rowIndex="1" />
-                                  <ChoiceBox fx:id="typeChoiceBox" prefHeight="27.0" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                              <Label text="Fill:" GridPane.rowIndex="2" />
-                              <ChoiceBox fx:id="fillChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                              <ChoiceBox fx:id="imageChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" />
-                              </children>
-                          </GridPane>
+                        <Label text="Image" underline="true" />
+                        <HBox spacing="5.0">
+                           <children>
+                              <ChoiceBox fx:id="imageChoiceBox" prefWidth="150.0" />
+                                  <ChoiceBox fx:id="typeChoiceBox" prefHeight="27.0" prefWidth="150.0" />
+                              <Button fx:id="addPresetButton1" mnemonicParsing="false" text="+" />
+                           </children>
+                        </HBox>
                         <Separator prefWidth="200.0">
                            <VBox.margin>
                               <Insets />
                            </VBox.margin>
                         </Separator>
-                        <HBox>
-                           <children>
-                              <Label alignment="CENTER_RIGHT" contentDisplay="CENTER" text="Size in pixels" underline="true" />
-                           </children>
-                        </HBox>
-                        <GridPane>
+                        <Label text="Dimensions" underline="true" />
+                        <GridPane hgap="2.0" vgap="2.0">
                           <columnConstraints>
-                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="10.0" />
-                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="15.0" />
-                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="0.0" />
-                              <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="15.0" />
-                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="10.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="35.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" />
+                              <ColumnConstraints hgrow="SOMETIMES" />
+                              <ColumnConstraints hgrow="SOMETIMES" />
+                              <ColumnConstraints hgrow="SOMETIMES" />
+                              <ColumnConstraints hgrow="SOMETIMES" />
                           </columnConstraints>
                           <rowConstraints>
-                            <RowConstraints />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="BOTTOM" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                                  <Label alignment="BOTTOM_LEFT" text="Width (x)" GridPane.rowIndex="1" GridPane.valignment="BOTTOM" />
-                                  <TextField fx:id="widthTextField" promptText="Width" text="256" GridPane.rowIndex="2" />
-                                  <Label text="Height (y)" GridPane.columnIndex="2" GridPane.rowIndex="1" GridPane.valignment="BOTTOM" />
-                              <TextField fx:id="heightTextField" promptText="Height (y)" text="256" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                              <Label text="Slices (z)" GridPane.columnIndex="4" GridPane.rowIndex="1" GridPane.valignment="BOTTOM" />
-                              <TextField fx:id="slicesTextField" promptText="Slices (z)" text="1" GridPane.columnIndex="4" GridPane.rowIndex="2" />
-                              <Label text="x" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
-                              <Label text="x" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+                              <Label alignment="CENTER_RIGHT" contentDisplay="CENTER" text="Size" GridPane.rowIndex="1" />
+                                  <Label alignment="BOTTOM_LEFT" text="Width (x)" GridPane.columnIndex="1" GridPane.valignment="BOTTOM" />
+                                  <Label text="Height (y)" GridPane.columnIndex="3" GridPane.valignment="BOTTOM" />
+                              <Label text="Slices (z)" GridPane.columnIndex="5" GridPane.valignment="BOTTOM" />
+                                  <TextField fx:id="widthTextField" promptText="Width" text="256" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <TextField fx:id="heightTextField" promptText="Height (y)" text="256" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                              <TextField fx:id="slicesTextField" promptText="Slices (z)" text="1" GridPane.columnIndex="5" GridPane.rowIndex="1" />
+                              <Label alignment="CENTER_RIGHT" contentDisplay="CENTER" text="min" GridPane.rowIndex="2" />
+                              <TextField fx:id="minX" prefHeight="27.0" promptText="0" text="-1" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <TextField fx:id="maxX" promptText="max-1" text="1" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                              <TextField fx:id="minY" promptText="0" text="-1" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                              <TextField fx:id="maxY" promptText="max-1" text="1" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                              <TextField fx:id="minZ" promptText="0" GridPane.columnIndex="5" GridPane.rowIndex="2" />
+                              <TextField fx:id="maxZ" promptText="max-1" GridPane.columnIndex="5" GridPane.rowIndex="3" />
+                              <Label alignment="CENTER_RIGHT" contentDisplay="CENTER" text="max" GridPane.rowIndex="3" />
                            </children>
-                           <padding>
-                              <Insets top="-10.0" />
-                           </padding>
                         </GridPane>
-                        <HBox>
+                        <HBox alignment="CENTER" spacing="100.0">
                            <children>
-                              <Label alignment="CENTER_RIGHT" contentDisplay="CENTER" text="Coordinate range" underline="true" />
+                              <ToggleButton mnemonicParsing="false" text="≠" fx:id="xEqualY" />
+                              <ToggleButton fx:id="yEqualZ" mnemonicParsing="false" text="≠" />
                            </children>
                            <padding>
-                              <Insets top="5.0" />
+                              <Insets left="70.0" right="30.0" />
                            </padding>
                         </HBox>
-                        <GridPane hgap="5.0">
-                           <columnConstraints>
-                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" />
-                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="27.0" />
-                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" />
-                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="27.0" />
-                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" />
-                           </columnConstraints>
-                           <rowConstraints>
-                              <RowConstraints />
-                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                           </rowConstraints>
-                           <children>
-                              <HBox prefHeight="100.0" prefWidth="200.0" spacing="2.0" GridPane.rowIndex="1">
-                                 <children>
-                                    <TextField fx:id="minX" prefHeight="27.0" promptText="0" />
-                                    <Label alignment="CENTER" contentDisplay="BOTTOM" prefHeight="27.0" text=".." textAlignment="CENTER">
-                                       <cursor>
-                                          <Cursor fx:constant="NONE" />
-                                       </cursor>
-                                    </Label>
-                                    <TextField fx:id="maxX" promptText="max-1" />
-                                 </children>
-                              </HBox>
-                              <HBox prefHeight="100.0" prefWidth="200.0" spacing="2.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
-                                 <children>
-                                    <TextField fx:id="minY" promptText="0" />
-                                    <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="27.0" text=".." textAlignment="CENTER">
-                                       <cursor>
-                                          <Cursor fx:constant="NONE" />
-                                       </cursor>
-                                    </Label>
-                                    <TextField fx:id="maxY" promptText="max-1" />
-                                 </children>
-                              </HBox>
-                              <HBox prefHeight="100.0" prefWidth="200.0" spacing="2.0" GridPane.columnIndex="4" GridPane.rowIndex="1">
-                                 <children>
-                                    <TextField fx:id="minZ" promptText="0" />
-                                    <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="27.0" text=".." textAlignment="CENTER">
-                                       <cursor>
-                                          <Cursor fx:constant="NONE" />
-                                       </cursor>
-                                    </Label>
-                                    <TextField fx:id="maxZ" promptText="max-1" />
-                                 </children>
-                              </HBox>
-                              <ToggleButton mnemonicParsing="false" text="≠" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.valignment="TOP" fx:id="xEqualY" />
-                              <ToggleButton fx:id="yEqualZ" mnemonicParsing="false" text="≠" GridPane.columnIndex="3" GridPane.rowIndex="1" GridPane.valignment="TOP" />
-                           </children>
-                        </GridPane>
-                        <Label text="Point of origin" underline="true" />
-                        <ButtonBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="28.0" prefWidth="438.0">
-                          <buttons>
-                              <ToggleButton mnemonicParsing="false" text="Top">
-                                 <toggleGroup>
-                                    <ToggleGroup fx:id="pointOfOrigin" />
-                                 </toggleGroup>
-                              </ToggleButton>
-                              <ToggleButton accessibleRole="BUTTON" mnemonicParsing="false" text="Center" textAlignment="CENTER" toggleGroup="$pointOfOrigin" />
-                              <ToggleButton mnemonicParsing="false" text="Bottom" />
-                          </buttons>
-                        </ButtonBar>
                      </children>
                   </VBox>
-                  <VBox alignment="TOP_CENTER" prefHeight="279.0" prefWidth="255.0" spacing="10.0">
+                  <VBox alignment="TOP_RIGHT" prefHeight="279.0" prefWidth="255.0" spacing="10.0">
                      <children>
-                        <ImageView fx:id="preview" fitHeight="256.0" fitWidth="256.0" pickOnBounds="true" preserveRatio="true" />
-                        <ButtonBar nodeOrientation="LEFT_TO_RIGHT" prefHeight="40.0" prefWidth="200.0">
-                          <buttons>
-                              <VBox prefHeight="200.0" prefWidth="100.0" spacing="5.0">
-                                 <children>
-                                    <CheckBox fx:id="previewCheckBox" alignment="BOTTOM_RIGHT" contentDisplay="RIGHT" focusTraversable="false" mnemonicParsing="false" text="Preview" textAlignment="CENTER" />
-                                    <CheckBox fx:id="drawAxesCheckBox" alignment="BOTTOM_RIGHT" contentDisplay="RIGHT" disable="true" focusTraversable="false" mnemonicParsing="false" selected="true" text="show axes" textAlignment="CENTER" />
-                                    <CheckBox fx:id="drawScaleCheckBox" alignment="BOTTOM_RIGHT" contentDisplay="RIGHT" disable="true" focusTraversable="false" layoutX="10.0" layoutY="33.0" mnemonicParsing="false" selected="true" text="show scale" textAlignment="CENTER" />
-                                 </children>
-                              </VBox>
-                          </buttons>
-                        </ButtonBar>
+                        <VBox alignment="CENTER" prefHeight="256.0" prefWidth="256.0">
+                           <children>
+                              <ImageView fx:id="preview" fitHeight="256.0" fitWidth="256.0" pickOnBounds="true" preserveRatio="true" />
+                           </children>
+                        </VBox>
+                        <VBox alignment="TOP_RIGHT" spacing="5.0">
+                           <children>
+                              <CheckBox fx:id="drawAxesCheckBox" alignment="BOTTOM_RIGHT" contentDisplay="RIGHT" focusTraversable="false" mnemonicParsing="false" selected="true" text="show axes" textAlignment="CENTER" />
+                           </children>
+                        </VBox>
                      </children>
                      <padding>
                         <Insets left="10.0" />
@@ -211,64 +137,6 @@
                         </Label>
                         <ChoiceBox fx:id="PresetsChoiceBox" prefWidth="250.0" />
                         <Button fx:id="addPresetButton" mnemonicParsing="false" text="+" />
-                     </children>
-                  </HBox>
-               </children>
-            </HBox>
-            <HBox alignment="CENTER_LEFT" prefHeight="64.0" prefWidth="693.0" spacing="5.0">
-               <children>
-                  <GridPane alignment="CENTER" hgap="5.0" vgap="2.0">
-                    <columnConstraints>
-                      <ColumnConstraints fillWidth="false" hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
-                    </columnConstraints>
-                    <rowConstraints>
-                      <RowConstraints />
-                      <RowConstraints />
-                        <RowConstraints />
-                    </rowConstraints>
-                     <children>
-                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="sin" />
-                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="cos" GridPane.columnIndex="1" />
-                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="tan" GridPane.columnIndex="2" />
-                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="e" GridPane.columnIndex="3" />
-                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="abs" GridPane.columnIndex="4" />
-                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="x^n" GridPane.columnIndex="5" />
-                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="asin" GridPane.rowIndex="2" />
-                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="acos" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="atan" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="π" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="√" GridPane.columnIndex="4" GridPane.rowIndex="2" />
-                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="log" GridPane.columnIndex="5" GridPane.rowIndex="2" />
-                     </children>
-                  </GridPane>
-                  <Separator orientation="VERTICAL" prefHeight="200.0" />
-                  <GridPane alignment="CENTER" hgap="5.0" vgap="2.0">
-                     <columnConstraints>
-                        <ColumnConstraints fillWidth="false" hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
-                     </columnConstraints>
-                     <rowConstraints>
-                        <RowConstraints />
-                        <RowConstraints />
-                        <RowConstraints />
-                     </rowConstraints>
-                     <children>
-                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="x" />
-                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="y" GridPane.columnIndex="1" />
-                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="z" GridPane.columnIndex="2" />
-                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="d" GridPane.rowIndex="2" />
-                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="a" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="50.0" text="b" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                     </children>
-                  </GridPane>
-                  <HBox alignment="BOTTOM_RIGHT" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
-                     <children>
                         <Button mnemonicParsing="false" onAction="#openMacroHelp" prefHeight="27.0" prefWidth="27.0" text="?">
                            <tooltip>
                               <Tooltip text="...more functions" />
@@ -278,9 +146,9 @@
                   </HBox>
                </children>
             </HBox>
-            <TextField fx:id="functionTextArea" text="sin(x)+sin(y)+sin(z)" />
-            <TextField layoutX="10.0" layoutY="528.0" />
-            <TextField layoutX="10.0" layoutY="528.0" />
+            <TextField fx:id="functionTextField1" text="sin(x)+sin(y)+sin(z)" />
+            <TextField fx:id="functionTextField2" layoutX="10.0" layoutY="528.0" />
+            <TextField fx:id="functionTextField3" layoutX="10.0" layoutY="528.0" />
          </children>
       </VBox>
    </center>
