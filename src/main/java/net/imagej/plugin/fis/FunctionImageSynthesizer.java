@@ -317,14 +317,12 @@ public class FunctionImageSynthesizer extends ImageMath {
         colorProcessor.setColor(Color.GREEN);
 
         // x axis
-        double xrange = Math.abs(min[0]) + Math.abs(max[0]);
-        int xAxisPos = (int) Math.abs((min[0]*width)/xrange);
+        int xAxisPos = (int) ((-min[0]*width-1)/(max[0]-min[0]));
         xAxisPos = xAxisPos==height?xAxisPos-1:xAxisPos;
         colorProcessor.drawLine(xAxisPos,0,xAxisPos,height);
 
         // y axis
-        double yrange = Math.abs(min[1]) + Math.abs(max[1]);
-        int yAxisPos = (int) Math.abs((min[1]*height)/yrange);
+        int yAxisPos = (int) ((-min[1]*height-1)/(max[1]-min[1]));
         yAxisPos = yAxisPos==width?yAxisPos-1:yAxisPos;
         colorProcessor.drawLine(0,yAxisPos,width,yAxisPos);
     }
