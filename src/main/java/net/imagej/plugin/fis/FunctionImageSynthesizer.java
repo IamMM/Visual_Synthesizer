@@ -292,11 +292,13 @@ public class FunctionImageSynthesizer extends ImageMath {
 
         if(width>MAX_PREVIEW_SIZE) {
             height = height*MAX_PREVIEW_SIZE/width;
+            height = height<1?1:height;
             width = MAX_PREVIEW_SIZE;
         }
 
         if(height>MAX_PREVIEW_SIZE) {
             width = width*MAX_PREVIEW_SIZE/height;
+            width = width<1?1:width;
             height = MAX_PREVIEW_SIZE;
         }
         ImageProcessor ip = imagePlus.getProcessor();

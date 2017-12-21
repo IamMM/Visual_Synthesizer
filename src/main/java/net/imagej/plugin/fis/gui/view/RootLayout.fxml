@@ -18,7 +18,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.imagej.plugin.fis.gui.view.RootLayoutController">
+<BorderPane prefHeight="490.0" prefWidth="713.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.imagej.plugin.fis.gui.view.RootLayoutController">
    <bottom>
       <ButtonBar prefWidth="693.0" BorderPane.alignment="CENTER">
         <buttons>
@@ -48,6 +48,7 @@
                               <Button fx:id="addPresetButton1" mnemonicParsing="false" text="+" />
                            </children>
                         </HBox>
+                        <CheckBox fx:id="invertingLUTCheckBox" mnemonicParsing="false" text="inverting LUT" />
                         <Separator prefWidth="200.0">
                            <VBox.margin>
                               <Insets />
@@ -64,10 +65,10 @@
                               <ColumnConstraints hgrow="SOMETIMES" />
                           </columnConstraints>
                           <rowConstraints>
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="BOTTOM" vgrow="SOMETIMES" />
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints vgrow="SOMETIMES" />
+                            <RowConstraints vgrow="SOMETIMES" />
+                            <RowConstraints vgrow="SOMETIMES" />
+                             <RowConstraints vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
                               <Label alignment="CENTER_RIGHT" contentDisplay="CENTER" text="Size" GridPane.rowIndex="1" />

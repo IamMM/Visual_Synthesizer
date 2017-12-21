@@ -74,10 +74,10 @@ public class RootLayoutController implements Initializable, ImageListener{
     private ImageView preview;
 
     @FXML
-    private CheckBox drawAxesCheckBox;
+    private CheckBox invertingLUTCheckBox, drawAxesCheckBox;
 
     @FXML
-    private TextField functionTextField1;
+    private TextField functionTextField1, functionTextField2, functionTextField3;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -101,14 +101,28 @@ public class RootLayoutController implements Initializable, ImageListener{
                 heightTextField.textProperty().setValue(""+tmp.getHeight());
                 slicesTextField.textProperty().setValue(""+tmp.getNSlices());
             }
-            typeChoiceBox.disableProperty().setValue(!doNewImage);
             widthTextField.disableProperty().setValue(!doNewImage);
             heightTextField.disableProperty().setValue(!doNewImage);
             slicesTextField.disableProperty().setValue(!doNewImage);
             updatePreview();
         });
 
-        typeChoiceBox.valueProperty().addListener(observable -> updatePreview());
+        typeChoiceBox.valueProperty().addListener((observable, oldValue, newValue )-> {
+            boolean isRGB = newValue.equals("RGB");
+            invertingLUTCheckBox.setDisable(isRGB);
+            functionTextField2.setVisible(isRGB);
+            functionTextField3.setVisible(isRGB);
+
+            if(!doNewImage) {
+                ImagePlus tmp = WindowManager.getImage(imageChoiceBox.getValue());
+                if(!getTypeString(tmp.getType()).equals(newValue)){
+                    IJ.doCommand(tmp,newValue.toLowerCase());
+                }
+            }
+            updatePreview();
+        });
+
+        invertingLUTCheckBox.selectedProperty().addListener(observable -> updatePreview());
         widthTextField.focusedProperty().addListener((observable -> updatePreview()));
         heightTextField.focusedProperty().addListener((observable -> updatePreview()));
         slicesTextField.focusedProperty().addListener(observable -> updatePreview());
@@ -244,6 +258,8 @@ public class RootLayoutController implements Initializable, ImageListener{
             imagePlus = WindowManager.getImage(imageChoiceBox.getValue()).duplicate();
         }
 
+        if(invertingLUTCheckBox.isSelected()) imagePlus.getProcessor().invertLut();
+
         Image previewImage = FIS.getPreview(imagePlus, min, max, function, drawAxesCheckBox.isSelected());
 
         preview.setImage(previewImage);
@@ -297,6 +313,7 @@ public class RootLayoutController implements Initializable, ImageListener{
             imagePlus = WindowManager.getImage(imageChoiceBox.getValue()).duplicate();
             imagePlus.setTitle(function);
         }
+        if(invertingLUTCheckBox.isSelected()) imagePlus.getProcessor().invertLut();
         FIS.functionToImage(imagePlus, min, max, function);
         IJ.resetMinAndMax(imagePlus);
         imagePlus.show();
@@ -322,6 +339,14 @@ public class RootLayoutController implements Initializable, ImageListener{
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
+
+//        final Stage dialog = new Stage();
+//        dialog.initModality(Modality.APPLICATION_MODAL);
+//        VBox dialogVbox = new VBox(20);
+//        dialogVbox.getChildren().add(new Text("This is a Dialog"));
+//        Scene dialogScene = new Scene(dialogVbox, 300, 200);
+//        dialog.setScene(dialogScene);
+//        dialog.show();
     }
 
     private void initImageList() {
